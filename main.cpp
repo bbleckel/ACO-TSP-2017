@@ -31,7 +31,20 @@ void printInfo() {
 
 
 int main (int argc, char** argv) {
+		int algtype; // 0 for EAS, 1 for ACS
+		int numAnts;
+		int iterations;
+		double pheroInfluence;
+		double heurInfluence;
+		double evaporation;
 
+		// this one only for EAS
+		double elitism;
+
+		// these three only for ACS
+		double epsilon;
+		double tau0;
+		double q0;
 
 
 
