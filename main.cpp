@@ -46,6 +46,23 @@ int main (int argc, char** argv) {
 		double tau0;
 		double q0;
 
+		if(argc != 8 && argc != 10) {
+			// incorrect input
+			printInfo();
+			exit(1);
+		} else {
+			// type of algorithm determines how other arguments are interpreted
+			if (!strcmp(argv[1], "eas")) {
+				algType = 0;
+			} else if (!strcmp(argv[1], "acs")) {
+				algType = 2;
+			} else {
+				cout << "Invalid first argument specifying algorithm type. Please use:" << endl;
+				cout << "    algorithm    = type of algorithm, Elite Ant System or Ant Colony System (eas or acs) (string)" << endl;
+        exit(1);
+			}
+		}
+
 
 
 }
