@@ -36,6 +36,9 @@ void ACOSolver::readFile() {
                 string entry;
                 string delimiter = " ";
                 
+                // erase line number
+                line.erase(0, line.find(delimiter) + delimiter.length());
+
                 // save coordinates
                 x = stof(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
@@ -47,11 +50,14 @@ void ACOSolver::readFile() {
                 cities.push_back(p);
                 
             } else if (line.front() == 'E' && line.back() == 'F') {
-                // done
+                // EOF found -- done
                 break;
             } else if (started) {
                 string entry;
                 string delimiter = " ";
+                
+                // erase line number
+                line.erase(0, line.find(delimiter) + delimiter.length());
                 
                 x = stof(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
@@ -73,5 +79,6 @@ void ACOSolver::readFile() {
 }
 
 
-
+// NOTES
+// if we ever need "ID" for city, change readFile to not delete line number but make it the ID
 // render cities in OpenGL for lulz?
