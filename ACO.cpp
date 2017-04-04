@@ -6,7 +6,7 @@ void printPoint(point2D p) {
     cout << "(" << p.x << ", " << p.y << ")" << endl;
 }
 
-void printCity(City c) {
+void printCity(city c) {
     cout << "City " << c.ID << ": (" << c.p.x << ", " << c.p.y << ")" << endl;
 }
 
@@ -130,7 +130,7 @@ void ACOSolver::readFile() {
                 string entry;
                 string delimiter = " ";
 
-                City c;
+                city c;
 
                 // store line number as city ID
                 ID = stoi(line.substr(0, line.find(delimiter)));

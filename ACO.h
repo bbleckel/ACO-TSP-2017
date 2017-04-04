@@ -42,7 +42,7 @@ typedef struct _city {
 } city;
 
 void printPoint(point2D p);
-void printCity(City c);
+void printCity(city c);
 
 class Ant {
 
@@ -53,8 +53,8 @@ public:
     ACOSolver(string fileName);
     ~ACOSolver();
 
-    vector<City> cities;
-    vector<Leg> legs;
+    vector<city> cities;
+    vector<leg> legs;
     vector<int> bsfRoute;
 
     string fileName;
@@ -63,7 +63,7 @@ public:
     void solveACS();
 
     // helper functions
-    bool inBSF(City city1, City city2);
+    bool inBSF(city city1, city city2);
     double calculateDistance(point2D city1, point2D city2);
 
 private:
