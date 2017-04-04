@@ -4,7 +4,16 @@ using namespace std;
 
 void printPoint(point2D p) {
     cout << "(" << p.x << ", " << p.y << ")" << endl;
-    }
+}
+
+// calculates the distance between two cities
+double calculateDistance(point2D city1, point2D city2) {
+    int aSquared = (city1.x - city2.x) * (city1.x - city2.x);
+    int bSquared = (city1.y - city2.y) * (city1.y - city2.y);
+    int cSquared = aSquared + bSquared;
+    double distance = pow(cSquared, 0.5);
+    return distance;
+}
 
 ACOSolver::ACOSolver(string fileName) {
     // constructor
@@ -21,10 +30,10 @@ void ACOSolver::readFile() {
     string line;
     ifstream inputFile;
     inputFile.open(fileName, ios::in);
-    
+
     int x, y;
     point2D p;
-    
+
     int started = 0;
     if(!inputFile.is_open()) {
         cerr << "ERROR: Could not open file" << endl;
@@ -35,7 +44,7 @@ void ACOSolver::readFile() {
                 started = 1;
                 string entry;
                 string delimiter = " ";
-                
+
                 // erase line number
                 line.erase(0, line.find(delimiter) + delimiter.length());
 
@@ -44,30 +53,30 @@ void ACOSolver::readFile() {
                 line.erase(0, line.find(delimiter) + delimiter.length());
                 y = stof(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
-                
+
                 p.x = x;
                 p.y = y;
                 cities.push_back(p);
-                
+
             } else if (line.front() == 'E' && line.back() == 'F') {
                 // EOF found -- done
                 break;
             } else if (started) {
                 string entry;
                 string delimiter = " ";
-                
+
                 // erase line number
                 line.erase(0, line.find(delimiter) + delimiter.length());
-                
+
                 x = stof(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
                 y = stof(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
-                
+
                 p.x = x;
                 p.y = y;
                 cities.push_back(p);
-                
+
             }
         }
         inputFile.close();
