@@ -19,6 +19,11 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
+City getRandomCity(vector<City> unvisited) {
+    int randomIndex = rand() % unvisited.size();
+    return unvisited[randomIndex];
+}
+
 // returns true if there is a path from city1 to city2 in the bsf path
 bool ACOSolver::inBSF(City city1, City city2) {
     bool isInBSF = false;
@@ -178,8 +183,26 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
     }
 }
 
-void ACOSolver::updateAntPos(Ant a) {
-  
+City ACOSolver::updateAntPos(Ant k) {
+    double pij;
+
+    while() {
+        City randCity = getRandomCity(k.unvisited);
+        double distToRandCity = calculateDistance(k.city.p, randCity);
+        double pheroOnLegToRand;
+        int iter = 0;
+        while(iter < legs.size()) {
+            if (legs[iter].city1 == k.city.p && legs[iter].city1 == randCity) {
+                pheroOnLegToRand = legs[iter].phero;
+                break;
+            } else if (legs[iter].city1 == randCity && legs[iter].city1 == k.city.p) {
+                pheroOnLegToRand = legs[iter].phero;
+                break;
+            }
+            iter++;
+        }
+        double numerator =
+    }
 }
 
 // NOTES
