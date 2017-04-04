@@ -44,9 +44,10 @@ typedef struct _city {
 void printPoint(point2D p);
 void printCity(City c);
 
-class Ant {
-    
-};
+typedef struct _ant {
+    City city;
+    vector<City> unvisited;
+} Ant;
 
 class ACOSolver {
 public:
