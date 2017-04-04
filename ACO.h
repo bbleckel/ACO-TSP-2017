@@ -34,15 +34,15 @@ typedef struct _point2d {
 typedef struct _leg {
     point2D city1, city2;
     double phero;
-} leg;
+} Leg;
 
 typedef struct _city {
     point2D p;
     int ID;
-} city;
+} City;
 
 void printPoint(point2D p);
-void printCity(city c);
+void printCity(City c);
 
 class Ant {
 
@@ -53,8 +53,8 @@ public:
     ACOSolver(string fileName);
     ~ACOSolver();
 
-    vector<city> cities;
-    vector<leg> legs;
+    vector<City> cities;
+    vector<Leg> legs;
     vector<int> bsfRoute;
 
     string fileName;
@@ -63,14 +63,15 @@ public:
     void solveACS();
 
     // helper functions
-    bool inBSF(city city1, city city2);
-    double calculateDistance(point2D city1, point2D city2);
+    bool inBSF(City city1, City city2);
+    double calculateDistance(point2D City1, point2D City2);
 
 private:
     void initAllLegs();
     void readFile();
     void ACSPheroUpdate(double oldPhero);
     void EASPheroUpdate(double oldPhero);
+    void updateAntPos(Ant a);
 };
 
 

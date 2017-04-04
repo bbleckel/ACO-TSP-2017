@@ -6,7 +6,7 @@ void printPoint(point2D p) {
     cout << "(" << p.x << ", " << p.y << ")" << endl;
 }
 
-void printCity(city c) {
+void printCity(City c) {
     cout << "City " << c.ID << ": (" << c.p.x << ", " << c.p.y << ")" << endl;
 }
 
@@ -20,7 +20,7 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
-bool ACOSolver::inBSF(city city1, city city2) {
+bool ACOSolver::inBSF(City city1, City city2) {
     bool isInBSF = false;
     // check if the two cities are next to each other in the bsf list
     for(int i = 0; i < bsfRoute.size(); i++) {
@@ -62,7 +62,7 @@ bool ACOSolver::inBSF(city city1, city city2) {
 void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size() - 1; i++) {
         for (int j = i + 1; j < cities.size(); j++) {
-            leg tempLeg;
+            Leg tempLeg;
             tempLeg.city1 = cities[i].p;
             tempLeg.city2 = cities[j].p;
             tempLeg.phero = 0.0;
@@ -103,7 +103,7 @@ void ACOSolver::readFile() {
                 string entry;
                 string delimiter = " ";
 
-                city c;
+                City c;
 
                 // store line number as city ID
                 ID = stoi(line.substr(0, line.find(delimiter)));
@@ -130,7 +130,7 @@ void ACOSolver::readFile() {
                 string entry;
                 string delimiter = " ";
 
-                city c;
+                City c;
 
                 // store line number as city ID
                 ID = stoi(line.substr(0, line.find(delimiter)));
@@ -176,6 +176,10 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
         // newPhero = (1 - RHO) * oldPhero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
         legs[i].phero = newPhero;
     }
+}
+
+void ACOSolver::updateAntPos(Ant a) {
+  
 }
 
 // NOTES
