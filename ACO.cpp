@@ -20,7 +20,7 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
-bool ACOSolver::inBSF(City city1, City city2) {
+bool ACOSolver::inBSF(city city1, city city2) {
     bool isInBSF = false;
     // check if the two cities are next to each other in the bsf list
     for(int i = 0; i < bsfRoute.size(); i++) {
@@ -62,7 +62,7 @@ bool ACOSolver::inBSF(City city1, City city2) {
 void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size() - 1; i++) {
         for (int j = i + 1; j < cities.size(); j++) {
-            Leg tempLeg;
+            leg tempLeg;
             tempLeg.city1 = cities[i].p;
             tempLeg.city2 = cities[j].p;
             tempLeg.phero = 0.0;
@@ -75,7 +75,7 @@ ACOSolver::ACOSolver(string fileName) {
     // constructor
     this->fileName = fileName;
     readFile();
-    
+
     initAllLegs();
 }
 
@@ -102,8 +102,8 @@ void ACOSolver::readFile() {
                 started = 1;
                 string entry;
                 string delimiter = " ";
-                
-                City c;
+
+                city c;
 
                 // store line number as city ID
                 ID = stoi(line.substr(0, line.find(delimiter)));
@@ -117,10 +117,10 @@ void ACOSolver::readFile() {
 
                 p.x = x;
                 p.y = y;
-                
+
                 c.p = p;
                 c.ID = ID;
-                
+
                 cities.push_back(c);
 
             } else if (line.front() == 'E' && line.back() == 'F') {
@@ -129,7 +129,7 @@ void ACOSolver::readFile() {
             } else if (started) {
                 string entry;
                 string delimiter = " ";
-                
+
                 City c;
 
                 // store line number as city ID
@@ -143,10 +143,10 @@ void ACOSolver::readFile() {
 
                 p.x = x;
                 p.y = y;
-                
+
                 c.p = p;
                 c.ID = ID;
-                
+
                 cities.push_back(c);
             }
         }
@@ -163,7 +163,7 @@ void ACOSolver::ACSPheroUpdate(double oldPhero) {
     for(int i = 0; i < legs.size(); i++) {
         double newPhero = oldPhero;
         double deltaTotal = 0;
-        
+
         newPhero = (1 - RHO) * oldPhero + deltaTotal;
         legs[i].phero = newPhero;
     }

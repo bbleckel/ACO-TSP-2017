@@ -34,12 +34,12 @@ typedef struct _point2d {
 typedef struct _leg {
     point2D city1, city2;
     double phero;
-} Leg;
+} leg;
 
 typedef struct _city {
     point2D p;
     int ID;
-} City;
+} city;
 
 void printPoint(point2D p);
 void printCity(City c);
@@ -52,16 +52,16 @@ class ACOSolver {
 public:
     ACOSolver(string fileName);
     ~ACOSolver();
-    
+
     vector<City> cities;
     vector<Leg> legs;
     vector<int> bsfRoute;
 
     string fileName;
-    
+
     void solveEAS();
     void solveACS();
-    
+
     // helper functions
     bool inBSF(City city1, City city2);
     double calculateDistance(point2D city1, point2D city2);
