@@ -54,6 +54,18 @@ bool inBSF(point2D city1, point2D city2) {
     return isInBSF;
 }
 
+// puts all possible legs in a vector
+void initAllLegs() {
+    for (int i = 0; i < cities.size() - 1; i++) {
+        for (int j = i + 1; j < cities.size(); j++) {
+            tempLeg = new legStruct;
+            tempLeg.city1 = cities[i];
+            tempLeg.city2 = cities[j];
+            tempLeg.phero = 0.0;
+        }
+    }
+}
+
 ACOSolver::ACOSolver(string fileName) {
     // constructor
     this->fileName = fileName;

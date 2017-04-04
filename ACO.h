@@ -14,10 +14,17 @@ typedef struct _point2d {
     double x, y;
 } point2D;
 
+typedef struct _leg {
+    point2D city1, city2;
+    double phero;
+} legStruct;
+
 void printPoint(point2D p);
 
 double calculateDistance(point2D city1, point2D city2);
 bool inBSF(point2D city1, point2D city2);
+
+void initAllLegs();
 
 class Ant {
 
