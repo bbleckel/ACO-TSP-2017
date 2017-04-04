@@ -179,7 +179,7 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
 }
 
 void ACOSolver::updateAntPos(Ant a) {
-  
+
 }
 
 // NOTES

@@ -12,8 +12,8 @@ using namespace std;
 
 // parameters to set
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
-const int NUM_ANTS = 10;
-const int ITERATIONS = 50;
+const int NUM_ANTS = 10; // number of ants
+const int ITERATIONS = 50; // number of iterations
 const double ALPHA = 1.0; // pheromone influence
 const double BETA = 2.0; // heuristic influence
 const double RHO = 0.1; // evaporation
@@ -45,7 +45,7 @@ void printPoint(point2D p);
 void printCity(City c);
 
 class Ant {
-
+    
 };
 
 class ACOSolver {
