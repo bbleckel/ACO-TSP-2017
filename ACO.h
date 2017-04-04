@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <math.h>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ typedef struct _point2d {
 void printPoint(point2D p);
 
 class Ant {
-    
+
 };
 
 class ACOSolver {
@@ -24,7 +25,7 @@ public:
     vector<point2D> cities;
     ACOSolver(string fileName);
     ~ACOSolver();
-    
+
     string fileName;
 private:
     void readFile();
