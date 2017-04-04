@@ -10,6 +10,23 @@
 
 using namespace std;
 
+// parameters to set
+const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
+const int NUM_ANTS = 10;
+const int ITERATIONS = 50;
+const double ALPHA = 1.0; // pheromone influence
+const double BETA = 2.0; // heuristic influence
+const double RHO = 0.1; // evaporation
+
+// this one only for EAS
+const int ELITISM_FACTOR = NUM_ANTS;
+
+// these three only for ACS
+const double EPSILON = 0.1;
+const double TAU_0 = 0; //length of nearest neighbor tour, can we set that here? it's 1/(n·L_(nn))
+const double Q0 = 0.9;
+// end parameters to set
+
 typedef struct _point2d {
     double x, y;
 } point2D;
@@ -17,14 +34,15 @@ typedef struct _point2d {
 typedef struct _leg {
     point2D city1, city2;
     double phero;
-} legStruct;
+} Leg;
+
+typedef struct _city {
+    point2D p;
+    int ID;
+} City;
 
 void printPoint(point2D p);
-
-double calculateDistance(point2D city1, point2D city2);
-bool inBSF(point2D city1, point2D city2);
-
-void initAllLegs();
+void printCity(City c);
 
 class Ant {
 
@@ -32,38 +50,27 @@ class Ant {
 
 class ACOSolver {
 public:
-    vector<point2D> cities;
-    vector<point2D> bsfRoute;
     ACOSolver(string fileName);
     ~ACOSolver();
+    
+    vector<City> cities;
+    vector<Leg> legs;
+    vector<int> bsfRoute;
 
     string fileName;
-
-
+    
+    void solveEAS();
+    void solveACS();
+    
+    // helper functions
+    bool inBSF(City city1, City city2);
+    double calculateDistance(point2D city1, point2D city2);
 
 private:
-
-  // parameters to set
-    // const static int ALGTYPE = 1; // 0 for EAS, 1 for ACS
-    // const static int NUMANTS = 10;
-    // const static int ITERATIONS = 50;
-    // const double ALPHA = 1.0; // pheromone influence
-    // const double BETA = 2.0; // heuristic influence
-    // const double RHO = 0.1; // evaporation
-    //
-    // // this one only for EAS
-    // const static int ELITISM_FACTOR = NUMANTS;
-    //
-    // // these three only for ACS
-    // const double EPSILON = 0.1;
-    // const double TAU0; //length of nearest neighbor tour, can we set that here? it's 1/(n·L_(nn))
-    // const double Q0 = 0.9;
-  // end parameters to set
-
-
+    void initAllLegs();
     void readFile();
-    double acsPheroUpdate(double oldPhero);
-    double easPheroUpdate(double oldPhero);
+    void ACSPheroUpdate(double oldPhero);
+    void EASPheroUpdate(double oldPhero);
 };
 
 

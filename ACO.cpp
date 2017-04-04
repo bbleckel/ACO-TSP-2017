@@ -6,45 +6,49 @@ void printPoint(point2D p) {
     cout << "(" << p.x << ", " << p.y << ")" << endl;
 }
 
+void printCity(City c) {
+    cout << "City " << c.ID << ": (" << c.p.x << ", " << c.p.y << ")" << endl;
+}
+
 // calculates the distance between two cities
-double calculateDistance(point2D city1, point2D city2) {
-    int aSquared = (city1.x - city2.x) * (city1.x - city2.x);
-    int bSquared = (city1.y - city2.y) * (city1.y - city2.y);
-    int cSquared = aSquared + bSquared;
+double ACOSolver::calculateDistance(point2D city1, point2D city2) {
+    double aSquared = (city1.x - city2.x) * (city1.x - city2.x);
+    double bSquared = (city1.y - city2.y) * (city1.y - city2.y);
+    double cSquared = aSquared + bSquared;
     double distance = pow(cSquared, 0.5);
     return distance;
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
-bool inBSF(point2D city1, point2D city2) {
+bool ACOSolver::inBSF(City city1, City city2) {
     bool isInBSF = false;
     // check if the two cities are next to each other in the bsf list
     for(int i = 0; i < bsfRoute.size(); i++) {
       // have to loop to the back of the vector
-      if (bsfRoute[i] == city1) {
+      if (bsfRoute[i] == city1.ID) {
         if (i == 0) {
-          if (bsfRoute[bsfRoute.size() - 1] == city2) {
+          if (bsfRoute[bsfRoute.size() - 1] == city2.ID) {
             isInBSF = true;
           }
-          if (bsfRoute[1] == city2) {
+          if (bsfRoute[1] == city2.ID) {
             isInBSF = true;
           }
 
           // have to loop back to the front of the vector
         } else if (i == bsfRoute.size() - 1) {
-          if (bsfRoute[bsfRoute.size() - 2] == city2) {
+          if (bsfRoute[bsfRoute.size() - 2] == city2.ID) {
             isInBSF = true;
           }
-          if (bsfRoute[0] == city2) {
+          if (bsfRoute[0] == city2.ID) {
             isInBSF = true;
           }
 
           // can just check either direction
         } else {
-          if (bsfRoute[i - 1] == city2) {
+          if (bsfRoute[i - 1] == city2.ID) {
             isInBSF = true;
           }
-          if (bsfRoute[i + 1] == city2) {
+          if (bsfRoute[i + 1] == city2.ID) {
             isInBSF = true;
           }
         }
@@ -55,13 +59,14 @@ bool inBSF(point2D city1, point2D city2) {
 }
 
 // puts all possible legs in a vector
-void initAllLegs() {
+void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size() - 1; i++) {
         for (int j = i + 1; j < cities.size(); j++) {
-            tempLeg = new legStruct;
-            tempLeg.city1 = cities[i];
-            tempLeg.city2 = cities[j];
+            Leg tempLeg;
+            tempLeg.city1 = cities[i].p;
+            tempLeg.city2 = cities[j].p;
             tempLeg.phero = 0.0;
+            legs.push_back(tempLeg);
         }
     }
 }
@@ -70,6 +75,8 @@ ACOSolver::ACOSolver(string fileName) {
     // constructor
     this->fileName = fileName;
     readFile();
+    
+    initAllLegs();
 }
 
 ACOSolver::~ACOSolver() {
@@ -82,7 +89,7 @@ void ACOSolver::readFile() {
     ifstream inputFile;
     inputFile.open(fileName, ios::in);
 
-    int x, y;
+    int x, y, ID;
     point2D p;
 
     int started = 0;
@@ -95,8 +102,11 @@ void ACOSolver::readFile() {
                 started = 1;
                 string entry;
                 string delimiter = " ";
+                
+                City c;
 
-                // erase line number
+                // store line number as city ID
+                ID = stoi(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
 
                 // save coordinates
@@ -107,7 +117,11 @@ void ACOSolver::readFile() {
 
                 p.x = x;
                 p.y = y;
-                cities.push_back(p);
+                
+                c.p = p;
+                c.ID = ID;
+                
+                cities.push_back(c);
 
             } else if (line.front() == 'E' && line.back() == 'F') {
                 // EOF found -- done
@@ -115,8 +129,11 @@ void ACOSolver::readFile() {
             } else if (started) {
                 string entry;
                 string delimiter = " ";
+                
+                City c;
 
-                // erase line number
+                // store line number as city ID
+                ID = stoi(line.substr(0, line.find(delimiter)));
                 line.erase(0, line.find(delimiter) + delimiter.length());
 
                 x = stof(line.substr(0, line.find(delimiter)));
@@ -126,30 +143,40 @@ void ACOSolver::readFile() {
 
                 p.x = x;
                 p.y = y;
-                cities.push_back(p);
-
+                
+                c.p = p;
+                c.ID = ID;
+                
+                cities.push_back(c);
             }
         }
         inputFile.close();
     }
     cout << "Printing cities!" << endl;
     for(int i = 0; i < cities.size(); i++) {
-        printPoint(cities[i]);
+        printCity(cities[i]);
     }
 }
 
-double ACOSolver::acsPheroUpdate(double oldPhero){
-    int newPhero = oldPhero;
-    // newPhero = (1 - rho) * oldPhero + deltaTotal
-    return newPhero;
+void ACOSolver::ACSPheroUpdate(double oldPhero) {
+    // iterate through legs, updating pheromones
+    for(int i = 0; i < legs.size(); i++) {
+        double newPhero = oldPhero;
+        double deltaTotal = 0;
+        
+        newPhero = (1 - RHO) * oldPhero + deltaTotal;
+        legs[i].phero = newPhero;
+    }
 }
 
-double ACOSolver::easPheroUpdate(double oldPhero){
-    int newPhero = oldPhero;
-    // newPhero = (1 - rho) * oldPhero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
-    return newPhero;
+void ACOSolver::EASPheroUpdate(double oldPhero) {
+    // iterate through legs, updating pheromones
+    for(int i = 0; i < legs.size(); i++) {
+        double newPhero = oldPhero;
+        // newPhero = (1 - RHO) * oldPhero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+        legs[i].phero = newPhero;
+    }
 }
 
 // NOTES
-// if we ever need "ID" for city, change readFile to not delete line number but make it the ID
 // render cities in OpenGL for lulz?

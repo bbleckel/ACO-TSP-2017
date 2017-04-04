@@ -25,5 +25,7 @@ int main (int argc, char** argv) {
         cout << fileName << endl;
 
         ACOSolver solver(fileName);
+
     }
+    
 }
