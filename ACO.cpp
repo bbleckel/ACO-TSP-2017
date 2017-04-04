@@ -205,5 +205,50 @@ City ACOSolver::updateAntPos(Ant k) {
     }
 }
 
+void ACOSolver::solve() {
+    if (ALGTYPE == 1) {
+        solveACS();
+    } else {
+        solveEAS();
+    }
+}
 // NOTES
 // render cities in OpenGL for lulz?
+void ACOSolver::solveEAS() {
+    int iterations = 0;
+    while(!terminated(int iterations)) {
+
+        iterations++;
+    }
+}
+
+void ACOSolver::solveACS() {
+    int iterations = 0;
+    while(!terminated(int iterations)) {
+
+        iterations++;
+    }
+}
+
+bool ACOSolver::terminated(int iterations) {
+    /*   terminating mode:
+     *      if TERM = 1, iteration will stop after ITERATIONS iterations.
+     *      if TERM = 2, iteration will stop after our solution gets within
+                OPTIMAL_DEVIATION percent of the optimal solution
+     *      if TERM = 3, iteration will stop after either of the above
+                options are satisfied
+     */
+    const double TERM = 1;
+    if (TERM == 1 || TERM == 3) {
+        if (iterations == ITERATIONS) {
+            return true;
+        }
+    }
+    if (TERM == 2 || TERM == 3) {
+        if (bsfRoute.size()/optimal < OPTIMAL_DEVIATION) {
+            return true;
+        }
+    }
+
+    return false;
+}

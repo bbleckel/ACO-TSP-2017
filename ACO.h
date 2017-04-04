@@ -60,8 +60,11 @@ public:
 
     string fileName;
 
+    /* solver functions */
+    void solve();
     void solveEAS();
     void solveACS();
+    bool terminated(int iterations);
 
     // helper functions
     bool inBSF(City city1, City city2);
