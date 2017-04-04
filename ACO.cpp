@@ -15,6 +15,45 @@ double calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
+// returns true if there is a path from city1 to city2 in the bsf path
+bool inBSF(point2D city1, point2D city2) {
+    bool isInBSF = false;
+    // check if the two cities are next to each other in the bsf list
+    for(int i = 0; i < bsfRoute.size(); i++) {
+      // have to loop to the back of the vector
+      if (bsfRoute[i] == city1) {
+        if (i == 0) {
+          if (bsfRoute[bsfRoute.size() - 1] == city2) {
+            isInBSF = true;
+          }
+          if (bsfRoute[1] == city2) {
+            isInBSF = true;
+          }
+
+          // have to loop back to the front of the vector
+        } else if (i == bsfRoute.size() - 1) {
+          if (bsfRoute[bsfRoute.size() - 2] == city2) {
+            isInBSF = true;
+          }
+          if (bsfRoute[0] == city2) {
+            isInBSF = true;
+          }
+
+          // can just check either direction
+        } else {
+          if (bsfRoute[i - 1] == city2) {
+            isInBSF = true;
+          }
+          if (bsfRoute[i + 1] == city2) {
+            isInBSF = true;
+          }
+        }
+      }
+    }
+
+    return isInBSF;
+}
+
 ACOSolver::ACOSolver(string fileName) {
     // constructor
     this->fileName = fileName;
@@ -87,6 +126,17 @@ void ACOSolver::readFile() {
     }
 }
 
+double ACOSolver::acsPheroUpdate(double oldPhero){
+    int newPhero = oldPhero;
+    // newPhero = (1 - rho) * oldPhero + deltaTotal
+    return newPhero;
+}
+
+double ACOSolver::easPheroUpdate(double oldPhero){
+    int newPhero = oldPhero;
+    // newPhero = (1 - rho) * oldPhero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+    return newPhero;
+}
 
 // NOTES
 // if we ever need "ID" for city, change readFile to not delete line number but make it the ID
