@@ -63,6 +63,7 @@ public:
     vector<int> bsfRoute;
 
     string fileName;
+    int optimal;
 
     /* solver functions */
     void solve();

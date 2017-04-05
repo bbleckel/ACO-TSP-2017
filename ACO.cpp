@@ -82,6 +82,8 @@ bool ACOSolver::inBSF(City city1, City city2) {
 // puts all possible legs in a vector
 void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size() - 1; i++) {
+        bsfRoute[i] = i + 1;
+        bsfRouteLength = INT_MAX;
         for (int j = i + 1; j < cities.size(); j++) {
             Leg tempLeg;
             tempLeg.city1 = cities[i];
@@ -185,6 +187,34 @@ void ACOSolver::readFile() {
         }
         inputFile.close();
     }
+
+    //now search through the file "optimals.opt.txt" to find the optimal value
+    string optimalFile = "ALL_tsp/optimals.opt.txt";
+    inputFile.open(optimalFile, ios::in);
+    string strToRemove = "ALL_tsp/";
+    string t = fileName;
+    string::size_type i = t.find(strToRemove);
+
+    if (i != string::npos) {
+        t.erase(i, strToRemove.length());
+    }
+
+    string search = t.substr(0, t.find("."));
+    cout << "search is: " << search << endl;
+
+    if(!inputFile.is_open()) {
+        cerr << "ERROR: Could not open file" << endl;
+        exit(1);
+    } else {
+        while(getline(inputFile, line)) {
+            if (line.substr(0, line.find(" ")) == search) {
+                optimal = stoi(line.substr(line.find(": ")));
+                cout << optimal << " optimal found" << endl;
+                break;
+            }
+        }
+    }
+
     cout << "Printing cities!" << endl;
     for(int i = 0; i < cities.size(); i++) {
         printCity(cities[i]);
