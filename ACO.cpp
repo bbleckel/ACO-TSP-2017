@@ -417,9 +417,12 @@ void ACOSolver::solveEAS() {
 
         resetAnts();
         iterations++;
-        cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        if((iterations) % (ITERATIONS - iterations / 20) == 0) {
+            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        }
     }
     cout << endl << "Best after termination: " << bsfRouteLength << endl;
+    cout << "Optimal: " << optimal << endl;
 }
 
 void ACOSolver::solveACS() {
@@ -432,10 +435,13 @@ void ACOSolver::solveACS() {
         ACSGlobalPheroUpdate();
 
         resetAnts();
+        if((iterations) % (ITERATIONS - iterations / 20) == 0) {
+            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        }
         iterations++;
-        // cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
     }
     cout << endl << "Best after termination: " << bsfRouteLength << endl;
+    cout << "Optimal: " << optimal << endl << endl;
 }
 
 bool ACOSolver::terminated(int iterations) {
