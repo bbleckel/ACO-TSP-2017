@@ -266,8 +266,7 @@ void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
         double newPhero = legs[i].phero;
-        double deltaTotal = 0;
-        if inBSF(legs[i].city1, legs[i].city2) {
+        if (inBSF(legs[i].city1, legs[i].city2)) {
             newPhero = (1 - RHO) * legs[i].phero + RHO * (1/bsfRouteLength);
         } else {
           newPhero = (1 - RHO) * legs[i].phero;
@@ -371,7 +370,7 @@ void ACOSolver::solveACS() {
     }
 }
 
-bool ACOSolver::terminated(int iterations)
+bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
             return true;
