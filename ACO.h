@@ -95,9 +95,10 @@ private:
     void resetAnts();
     void readFile();
     void ACSGlobalPheroUpdate();
+    void ACSLocalPheroUpdate();
     void EASPheroUpdate();
     void buildTours();
-    City updateAntPos(Ant a);
+    City getNextCity(Ant a);
 };
 
 

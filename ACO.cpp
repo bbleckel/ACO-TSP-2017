@@ -263,7 +263,7 @@ void ACOSolver::readFile() {
     }
 }
 
-// updates the pheromone level using the ACS update formula
+// updates the pheromone level using the ACS global update formula
 void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
@@ -275,6 +275,19 @@ void ACOSolver::ACSGlobalPheroUpdate() {
         }
         legs[i].phero = newPhero;
     }
+}
+
+// updates the pheromone level using the ACS local update formula
+void ACOSolver::ACSGlobalPheroUpdate() {
+    // iterate through legs, updating pheromones
+    double newPhero = legs[i].phero;
+    if (inBSF(legs[i].city1, legs[i].city2)) {
+      newPhero = (1 - RHO) * legs[i].phero + RHO * (1/bsfRouteLength);
+    } else {
+      newPhero = (1 - RHO) * legs[i].phero;
+    }
+    legs[i].phero = newPhero;
+
 }
 
 // updates the pheromone level using the EAS update formula
@@ -294,8 +307,17 @@ void ACOSolver::buildTours() {
 
     for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
-            City city = updateAntPos(ants[i]);
+            City city = getNextCity(ants[i]);
+            City oldCity = ants[i].city;
+            ants[i].city = city;
             ants[i].tour.push_back(city);
+
+            // ACS specific bits
+            if (ALGTYPE == 1) {
+                ACSLocalPheroUpdate(oldCity, city);
+            }
+
+
         }
     }
 }
@@ -310,7 +332,8 @@ void ACOSolver::resetAnts() {
     }
 }
 
-City ACOSolver::updateAntPos(Ant k) {
+// gets a city for the ant to go to next
+City ACOSolver::getNextCity(Ant k) {
     double pij;
     City newCity;
     double denominator = 0;
