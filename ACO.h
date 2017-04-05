@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// parameters to set
+// START PARAMETERS
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 10; // number of ants
 const int ITERATIONS = 50; // number of iterations
@@ -27,7 +27,16 @@ const int ELITISM_FACTOR = NUM_ANTS;
 const double EPSILON = 0.1;
 const double TAU_0 = 0; //length of nearest neighbor tour, can we set that here? it's 1/(n·L_(nn))
 const double Q0 = 0.9;
-// end parameters to set
+
+/*   terminating mode:
+ *      if TERM = 1, iteration will stop after ITERATIONS iterations.
+ *      if TERM = 2, iteration will stop after our solution gets within
+            OPTIMAL_DEVIATION percent of the optimal solution
+ *      if TERM = 3, iteration will stop after either of the above
+            options are satisfied
+ */
+const double TERM = 1;
+// END PARAMETERS
 
 typedef struct _point2d {
     double x, y;
@@ -78,6 +87,7 @@ public:
     int getRandomCity(vector<City> unvisited);
     double getLegPhero(City city1, City city2);
     double calculateTourDistance(Ant a);
+    void updateBSF();
 
 private:
     void initAllLegs();

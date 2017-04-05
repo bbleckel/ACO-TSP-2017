@@ -33,6 +33,29 @@ double ACOSolver::calculateTourDistance(Ant a) {
     return totalDistance;
 }
 
+void ACOSolver::updateBSF() {
+  int localMinTourLength = INT_MAX;
+  vector<City> localMinTour;
+
+  // go through each tour that was built and calculate total distance of tour
+  for (int i = 0; i < ants.size(); i++) {
+      double tourLength = calculateTourDistance(ants[i]);
+      if (tourLength < localMinTourLength) {
+        localMinTourLength = tourLength;
+        localMinTour = ants[i].tour;
+      }
+
+  }
+
+  // replace bsfRoute if necessary
+  if (localMinTourLength < bsfRouteLength) {
+      bsfRouteLength = localMinTourLength;
+      for (int j = 0; j < localMinTour.size(); j++) {
+          bsfRoute[j] = localMinTour[j].ID;
+      }
+  }
+}
+
 // returns the index of a random city in the city vector sent to it
 int ACOSolver::getRandomCity(vector<City> cityVect) {
     int randomIndex = rand() % cityVect.size();
@@ -318,22 +341,10 @@ void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(iterations)) {
         buildTours();
+
+        updateBSF();
+
         EASPheroUpdate();
-        int localMinTourLength = INT_MAX;
-        vector<City> localMinTour;
-        //find best so far
-
-        // go through each tour that was built and calculate total distance of tour
-        for (int i = 0; i < ants.size(); i++) {
-            double tourLength = calculateTourDistance(ants[i]);
-            if (tourLength < localMinTourLength) {
-              localMinTourLength = tourLength;
-              localMinTour = ants[i].tour;
-            }
-
-        }
-        // save into bsfRoute
-
         iterations++;
     }
 }
@@ -342,6 +353,9 @@ void ACOSolver::solveACS() {
     int iterations = 0;
     while(!terminated(iterations)) {
         buildTours();
+
+        updateBSF();
+
         ACSPheroUpdate();
 
         iterations++;
@@ -349,15 +363,7 @@ void ACOSolver::solveACS() {
 }
 
 bool ACOSolver::terminated(int iterations) {
-    /*   terminating mode:
-     *      if TERM = 1, iteration will stop after ITERATIONS iterations.
-     *      if TERM = 2, iteration will stop after our solution gets within
-                OPTIMAL_DEVIATION percent of the optimal solution
-     *      if TERM = 3, iteration will stop after either of the above
-                options are satisfied
-     */
     int optimal = 10628; //hard coded for att48. needs to be changed to reflect all files
-    const double TERM = 1;
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
             return true;
