@@ -11,7 +11,7 @@
 using namespace std;
 
 // parameters to set
-const int ALGTYPE = 0; // 0 for EAS, 1 for ACS
+const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 10; // number of ants
 const int ITERATIONS = 50; // number of iterations
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
@@ -86,6 +86,8 @@ public:
     double calculateDistance(point2D City1, point2D City2);
     int getRandomCity(vector<City> unvisited);
     double getLegPhero(City city1, City city2);
+    Leg getLeg(City cityA, City cityB);
+    bool legMatchesCities(Leg theLeg, City cityA, City cityB);
     double calculateTourDistance(Ant a);
     void updateBSF();
 
@@ -95,7 +97,7 @@ private:
     void resetAnts();
     void readFile();
     void ACSGlobalPheroUpdate();
-    void ACSLocalPheroUpdate();
+    void ACSLocalPheroUpdate(City cityA, City cityB);
     void EASPheroUpdate();
     void buildTours();
     City getNextCity(Ant a);

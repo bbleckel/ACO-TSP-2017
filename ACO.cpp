@@ -50,7 +50,6 @@ void ACOSolver::updateBSF() {
   }
 
   // replace bsfRoute if necessary
-  cout << localMinTour.size() << endl;
   if (localMinTourLength < bsfRouteLength) {
       bsfRouteLength = localMinTourLength;
       for (int j = 0; j < localMinTour.size(); j++) {
@@ -78,6 +77,30 @@ double ACOSolver::getLegPhero(City cityA, City cityB) {
       }
   }
   return pheroLevel;
+}
+
+// gets the pheromone level on the leg between to input cities
+Leg ACOSolver::getLeg(City cityA, City cityB) {
+  Leg theLeg;
+  for(int j = 0; j < legs.size(); j++) {
+      if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
+          theLeg = legs[j];
+          break;
+      } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
+          theLeg = legs[j];
+          break;
+      }
+  }
+  return theLeg;
+}
+
+bool ACOSolver::legMatchesCities(Leg theLeg, City cityA, City cityB) {
+  if (theLeg.city1.ID == cityA.ID && theLeg.city2.ID == cityB.ID) {
+    return true;
+  } else if (theLeg.city1.ID == cityB.ID && theLeg.city2.ID == cityA.ID) {
+    return true;
+  }
+  return false;
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
@@ -140,7 +163,6 @@ void ACOSolver::initAnts() {
         a.unvisited = cities;
         int randCity = getRandomCity(a.unvisited);
         a.city = a.unvisited[randCity];
-        a.unvisited.erase(a.unvisited.begin() + randCity);
 
         ants.push_back(a);
     }
@@ -278,15 +300,15 @@ void ACOSolver::ACSGlobalPheroUpdate() {
 }
 
 // updates the pheromone level using the ACS local update formula
-void ACOSolver::ACSGlobalPheroUpdate() {
-    // iterate through legs, updating pheromones
-    double newPhero = legs[i].phero;
-    if (inBSF(legs[i].city1, legs[i].city2)) {
-      newPhero = (1 - RHO) * legs[i].phero + RHO * (1/bsfRouteLength);
-    } else {
-      newPhero = (1 - RHO) * legs[i].phero;
+void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
+    // find correct leg based on cities
+
+    for(int j = 0; j < legs.size(); j++) {
+        if (legMatchesCities(legs[j], cityA, cityB)) {
+            legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * TAU_0);
+            break;
+        }
     }
-    legs[i].phero = newPhero;
 
 }
 
@@ -301,11 +323,7 @@ void ACOSolver::EASPheroUpdate() {
 }
 
 void ACOSolver::buildTours() {
-    for (int i = 0; i < ants.size(); i++) {
-        ants[i].tour.push_back(ants[i].city);
-    }
-
-    for (int c = 0; c < cities.size() - 1; c++) {
+    for (int c = 0; c < cities.size(); c++) {
         for (int i = 0; i < ants.size(); i++) {
             City city = getNextCity(ants[i]);
             City oldCity = ants[i].city;
@@ -320,6 +338,7 @@ void ACOSolver::buildTours() {
 
         }
     }
+    resetAnts();
 }
 
 void ACOSolver::resetAnts() {
@@ -327,8 +346,6 @@ void ACOSolver::resetAnts() {
         ants[i].unvisited = cities;
         int randCity = getRandomCity(ants[i].unvisited);
         ants[i].city = ants[i].unvisited[randCity];
-        ants[i].unvisited.erase(ants[i].unvisited.begin() + randCity);
-        ants[i].tour.clear();
     }
 }
 
@@ -352,10 +369,7 @@ City ACOSolver::getNextCity(Ant k) {
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
-        // cout << "denominator " << denominator << " numerator " << numerator << endl;
-        double prob = (double)rand() / RAND_MAX;
-        // cout << "pij: " << pij << " prob: " << prob << endl;
-        // exit(0);
+        double prob = rand() / RAND_MAX;
         if (prob < pij) {
           newCity = randCity;
           k.unvisited.erase(k.unvisited.begin() + randCityIndex);
@@ -380,17 +394,14 @@ void ACOSolver::solve() {
 void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(iterations)) {
+        cout << iterations << endl;
         buildTours();
 
         updateBSF();
 
         EASPheroUpdate();
-
-        resetAnts();
         iterations++;
     }
-
-    cout << bsfRouteLength << " size: " << bsfRoute.size() << endl;
 }
 
 void ACOSolver::solveACS() {
@@ -402,7 +413,6 @@ void ACOSolver::solveACS() {
 
         ACSGlobalPheroUpdate();
 
-        resetAnts();
         iterations++;
     }
 }
