@@ -397,52 +397,35 @@ int ACOSolver::getNextCity(Ant k) {
 }
 
 void ACOSolver::solve() {
+    cout << endl;
     if (ALGTYPE == 1) {
-        solveACS();
+        cout << "Solving with Ant Colony System..." << endl << endl;
     } else {
-        solveEAS();
+        cout << "Solving with Elitist Ant System..." << endl << endl;
     }
+    int iterations = 1;
+    while(!terminated(iterations)) {
+        buildTours();
+
+        updateBSF();
+
+        if (ALGTYPE == 1) {
+            ACSGlobalPheroUpdate();
+        } else {
+            EASPheroUpdate();
+        }
+
+        resetAnts();
+        if((iterations-1) % (ITERATIONS - (iterations-1) / 20) == 0) {
+            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        }
+        iterations++;
+    }
+    cout << endl << "Overall best: " << bsfRouteLength << endl;
+    cout << "Optimal (from file): " << optimal << endl;
 }
 // NOTES
 // render cities in OpenGL for lulz?
-
-void ACOSolver::solveEAS() {
-    int iterations = 0;
-    while(!terminated(iterations)) {
-        buildTours();
-
-        updateBSF();
-
-        EASPheroUpdate();
-
-        resetAnts();
-        iterations++;
-        if((iterations) % (ITERATIONS - iterations / 20) == 0) {
-            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-        }
-    }
-    cout << endl << "Best after termination: " << bsfRouteLength << endl;
-    cout << "Optimal: " << optimal << endl;
-}
-
-void ACOSolver::solveACS() {
-    int iterations = 0;
-    while(!terminated(iterations)) {
-        buildTours();
-
-        updateBSF();
-
-        ACSGlobalPheroUpdate();
-
-        resetAnts();
-        if((iterations) % (ITERATIONS - iterations / 20) == 0) {
-            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-        }
-        iterations++;
-    }
-    cout << endl << "Best after termination: " << bsfRouteLength << endl;
-    cout << "Optimal: " << optimal << endl << endl;
-}
 
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {

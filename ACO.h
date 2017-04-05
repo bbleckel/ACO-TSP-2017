@@ -13,7 +13,7 @@ using namespace std;
 // parameters to set
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 10; // number of ants
-const int ITERATIONS = 50; // number of iterations
+const int ITERATIONS = 1000; // number of iterations
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
 const double ALPHA = 1.0; // pheromone influence
@@ -35,7 +35,7 @@ const double Q0 = 0.9;
  *      if TERM = 3, iteration will stop after either of the above
             options are satisfied
  */
-const double TERM = 1;
+const double TERM = 3;
 // END PARAMETERS
 
 typedef struct _point2d {
@@ -77,8 +77,6 @@ public:
 
     /* solver functions */
     void solve();
-    void solveEAS();
-    void solveACS();
     bool terminated(int iterations);
 
     // helper functions
