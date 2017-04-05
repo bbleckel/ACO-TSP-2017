@@ -19,9 +19,24 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
-int getRandomCity(vector<City> unvisited) {
-    int randomIndex = rand() % unvisited.size();
+// returns the index of a random city in the city vector sent to it
+int getRandomCity(vector<City> cityVect) {
+    int randomIndex = rand() % cityVect.size();
     return randomIndex;
+}
+
+double getLegPharo(City city1, City city2) {
+  double pharoLevel;
+  for(int j = 0; j < legs.size(); j++) {
+      if (legs[j].ID == city1.ID && legs[j].ID == city2.ID) {
+          pharoLevel = legs[j].phero;
+          break;
+      } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
+          pharoLevel = legs[j].phero;
+          break;
+      }
+  }
+  return pharoLevel;
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
@@ -219,19 +234,8 @@ City ACOSolver::updateAntPos(Ant k) {
     double denominator;
     for(int i = 0; i < k.unvisited.size(); i++) {
         double tempDenom = 0;
-        double tempPhero = 0;
+        double tempPhero = getLegPharo(k.city, k.unvisited[i]);
         double distToTempCity = calculateDistance(k.city.p, k.unvisited[i]);
-        int j = 0;
-        while(j < legs.size()) {
-            if (legs[j].city1 == k.city.p && legs[j].city2 == k.unvisited[i]) {
-                tempPhero = legs[j].phero;
-                break;
-            } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
-                tempPhero = legs[j].phero;
-                break;
-            }
-            j++;
-        }
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
     }
@@ -239,18 +243,7 @@ City ACOSolver::updateAntPos(Ant k) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
         double distToRandCity = calculateDistance(k.city.p, randCity);
-        double pheroOnLegToRand;
-        int iter = 0;
-        while(iter < legs.size()) {
-            if (legs[iter].city1 == k.city.p && legs[iter].city2 == randCity) {
-                pheroOnLegToRand = legs[iter].phero;
-                break;
-            } else if (legs[iter].city1 == randCity && legs[iter].city2 == k.city.p) {
-                pheroOnLegToRand = legs[iter].phero;
-                break;
-            }
-            iter++;
-        }
+        double pheroOnLegToRand = getLegPharo(k.city, randCity);
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
