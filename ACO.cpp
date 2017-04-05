@@ -307,7 +307,7 @@ void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
 
     for(int j = 0; j < legs.size(); j++) {
         if (legMatchesCities(legs[j], cityA, cityB)) {
-            legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * TAU_0);
+            legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
             break;
         }
     }
@@ -330,8 +330,6 @@ void ACOSolver::buildTours() {
     }
     for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
-            // cout << i  << "**********************************************************************" << endl;
-            // printCity(ants[i].city);
             int cityIndex = getNextCity(ants[i]);
             City city = ants[i].unvisited[cityIndex];
             City oldCity = ants[i].city;
@@ -386,7 +384,32 @@ int ACOSolver::getNextCity(Ant k) {
 
 }
 
+void ACOSolver::setTau() {
+    vector<City> notYetVisited = cities;
+    double totalDistance = 0;
+
+    int cityIndex = getRandomCity(notYetVisited);
+    int nextCityIndex = cityIndex;
+    for (int c = 0; c < cities.size() - 1; c++) {
+        cityIndex = nextCityIndex;
+        notYetVisited.erase(notYetVisited.begin() + cityIndex);
+        double minDistance = INT_MAX;
+
+        for (int i = 0; i < notYetVisited.size(); i++) {
+            double distance = calculateDistance(cities[cityIndex].p, notYetVisited[i].p);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nextCityIndex = i;
+            }
+        }
+        totalDistance += minDistance;
+    }
+    tau_0 = 1/(cities.size()*totalDistance);
+    cout << "tau_0 = " << tau_0 << " totalDistance = " << totalDistance << endl;
+}
+
 void ACOSolver::solve() {
+    setTau();
     cout << endl;
     if (ALGTYPE == 1) {
         cout << "Solving with Ant Colony System..." << endl << endl;
