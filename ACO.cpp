@@ -19,6 +19,20 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
+double ACOSolver::calculateTourDistance(Ant a) {
+    double totalDistance = 0;
+    for(int i = 0; i < a.tour.size(); i++) {
+        double thisDistance = 0
+        if (i = (a.tour.size() - 1)) {
+            thisDistance = calculateDistance(a.tour[i], a.tour[0])
+        } else {
+            thisDistance = calculateDistance(a.tour[i], a.tour[i+1])
+        }
+        totalDistance += thisDistance;
+    }
+    return totalDistance;
+}
+
 // returns the index of a random city in the city vector sent to it
 int ACOSolver::getRandomCity(vector<City> cityVect) {
     int randomIndex = rand() % cityVect.size();
@@ -305,9 +319,20 @@ void ACOSolver::solveEAS() {
     while(!terminated(iterations)) {
         buildTours();
         EASPheroUpdate();
-
+        int localMinTourLength = INT_MAX;
+        vector<City> localMinTour;
         //find best so far
 
+        // go through each tour that was built and calculate total distance of tour
+        for (int i = 0; i < ants.size(); i++) {
+            double tourLength = calculateTourDistance(ants[i]);
+            if (tourLength < localMinTourLength) {
+              localMinTourLength = tourLength;
+              localMinTour = ants[i].tour;
+            }
+
+        }
+        // save into bsfRoute
 
         iterations++;
     }
