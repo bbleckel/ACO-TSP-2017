@@ -50,6 +50,7 @@ void ACOSolver::updateBSF() {
   }
 
   // replace bsfRoute if necessary
+  cout << localMinTour.size() << endl;
   if (localMinTourLength < bsfRouteLength) {
       bsfRouteLength = localMinTourLength;
       for (int j = 0; j < localMinTour.size(); j++) {
@@ -139,6 +140,7 @@ void ACOSolver::initAnts() {
         a.unvisited = cities;
         int randCity = getRandomCity(a.unvisited);
         a.city = a.unvisited[randCity];
+        a.unvisited.erase(a.unvisited.begin() + randCity);
 
         ants.push_back(a);
     }
@@ -286,13 +288,16 @@ void ACOSolver::EASPheroUpdate() {
 }
 
 void ACOSolver::buildTours() {
-    for (int c = 0; c < cities.size(); c++) {
+    for (int i = 0; i < ants.size(); i++) {
+        ants[i].tour.push_back(ants[i].city);
+    }
+
+    for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
             City city = updateAntPos(ants[i]);
             ants[i].tour.push_back(city);
         }
     }
-    resetAnts();
 }
 
 void ACOSolver::resetAnts() {
@@ -300,6 +305,8 @@ void ACOSolver::resetAnts() {
         ants[i].unvisited = cities;
         int randCity = getRandomCity(ants[i].unvisited);
         ants[i].city = ants[i].unvisited[randCity];
+        ants[i].unvisited.erase(ants[i].unvisited.begin() + randCity);
+        ants[i].tour.clear();
     }
 }
 
@@ -322,7 +329,10 @@ City ACOSolver::updateAntPos(Ant k) {
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
-        double prob = rand() / RAND_MAX;
+        // cout << "denominator " << denominator << " numerator " << numerator << endl;
+        double prob = (double)rand() / RAND_MAX;
+        // cout << "pij: " << pij << " prob: " << prob << endl;
+        // exit(0);
         if (prob < pij) {
           newCity = randCity;
           k.unvisited.erase(k.unvisited.begin() + randCityIndex);
@@ -347,14 +357,17 @@ void ACOSolver::solve() {
 void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(iterations)) {
-        cout << iterations << endl;
         buildTours();
 
         updateBSF();
 
         EASPheroUpdate();
+
+        resetAnts();
         iterations++;
     }
+
+    cout << bsfRouteLength << " size: " << bsfRoute.size() << endl;
 }
 
 void ACOSolver::solveACS() {
@@ -366,6 +379,7 @@ void ACOSolver::solveACS() {
 
         ACSGlobalPheroUpdate();
 
+        resetAnts();
         iterations++;
     }
 }
