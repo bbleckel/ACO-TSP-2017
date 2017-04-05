@@ -77,11 +77,13 @@ public:
 
 private:
     void initAllLegs();
+    void initAnts();
+    void resetAnts();
     void readFile();
-    void ACSPheroUpdate(double oldPhero);
-    void EASPheroUpdate(double oldPhero);
+    void ACSPheroUpdate();
+    void EASPheroUpdate();
     void buildTours();
-    void updateAntPos(Ant a);
+    City updateAntPos(Ant a);
 };
 
 

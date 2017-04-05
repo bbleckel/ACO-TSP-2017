@@ -74,11 +74,14 @@ void ACOSolver::initAllLegs() {
             legs.push_back(tempLeg);
         }
     }
+}
 
+void ACOSolver::initAnts() {
     for (int i = 0; i < NUM_ANTS; i++) {
         Ant a;
         a.unvisited = cities;
-        a.city = getRandomCity(nat[i].unvisited);
+        int randCity = getRandomCity(a.unvisited);
+        a.city = a.unvisited[randCity];
 
         ants.push_back(a);
     }
@@ -90,6 +93,7 @@ ACOSolver::ACOSolver(string fileName) {
     readFile();
 
     initAllLegs();
+    initAnts();
 }
 
 ACOSolver::~ACOSolver() {
@@ -171,28 +175,28 @@ void ACOSolver::readFile() {
     }
 }
 
-void ACOSolver::ACSPheroUpdate(double oldPhero) {
+void ACOSolver::ACSPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
-        double newPhero = oldPhero;
+        double newPhero = legs[i].phero;
         double deltaTotal = 0;
 
-        newPhero = (1 - RHO) * oldPhero + deltaTotal;
+        newPhero = (1 - RHO) * legs[i].phero + deltaTotal;
         legs[i].phero = newPhero;
     }
 }
 
-void ACOSolver::EASPheroUpdate(double oldPhero) {
+void ACOSolver::EASPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
-        double newPhero = oldPhero;
-        // newPhero = (1 - RHO) * oldPhero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+        double newPhero = legs[i].phero;
+        // newPhero = (1 - RHO) * legs[i].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
         legs[i].phero = newPhero;
     }
 }
 
 void ACOSolver::buildTours() {
-    for (int c = 0; c < city.size(); c++) {
+    for (int c = 0; c < cities.size(); c++) {
         for (int i = 0; i < ants.size(); i++) {
             City city = updateAntPos(ants[i]);
             ants[i].tour.push_back(city);
@@ -203,8 +207,9 @@ void ACOSolver::buildTours() {
 
 void ACOSolver::resetAnts() {
     for (int i = 0; i < ants.size(); i++) {
-        ants[i].city = getRandomCity(ant[i].unvisited);
-        ants[i].unvisited =
+        ants[i].unvisited = cities;
+        int randCity = getRandomCity(ants[i].unvisited);
+        ants[i].city = ants[i].unvisited[randCity];
     }
 }
 
@@ -273,7 +278,12 @@ void ACOSolver::solve() {
 
 void ACOSolver::solveEAS() {
     int iterations = 0;
-    while(!terminated(int iterations)) {
+    while(!terminated(iterations)) {
+        buildTours();
+        EASPheroUpdate();
+
+        //find best so far
+
 
         iterations++;
     }
@@ -281,8 +291,10 @@ void ACOSolver::solveEAS() {
 
 void ACOSolver::solveACS() {
     int iterations = 0;
-    while(!terminated(int iterations)) {
+    while(!terminated(iterations)) {
         buildTours();
+        ACSPheroUpdate();
+
         iterations++;
     }
 }
