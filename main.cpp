@@ -26,7 +26,7 @@ int main (int argc, char** argv) {
 
         ACOSolver solver(fileName);
 
-        solve.solve();
+        solver.solve();
     }
 
 }
