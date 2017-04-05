@@ -25,14 +25,14 @@ int getRandomCity(vector<City> cityVect) {
     return randomIndex;
 }
 
-double getLegPharo(City city1, City city2) {
-  double pharoLevel;
+double getLegPhero(City cityA, City cityB) {
+  double pheroLevel;
   for(int j = 0; j < legs.size(); j++) {
-      if (legs[j].ID == city1.ID && legs[j].ID == city2.ID) {
-          pharoLevel = legs[j].phero;
+      if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
+          pheroLevel = legs[j].phero;
           break;
-      } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
-          pharoLevel = legs[j].phero;
+      } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
+          pheroLevel = legs[j].phero;
           break;
       }
   }
@@ -234,7 +234,7 @@ City ACOSolver::updateAntPos(Ant k) {
     double denominator;
     for(int i = 0; i < k.unvisited.size(); i++) {
         double tempDenom = 0;
-        double tempPhero = getLegPharo(k.city, k.unvisited[i]);
+        double tempPhero = getLegPhero(k.city, k.unvisited[i]);
         double distToTempCity = calculateDistance(k.city.p, k.unvisited[i]);
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
@@ -243,7 +243,7 @@ City ACOSolver::updateAntPos(Ant k) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
         double distToRandCity = calculateDistance(k.city.p, randCity);
-        double pheroOnLegToRand = getLegPharo(k.city, randCity);
+        double pheroOnLegToRand = getLegPhero(k.city, randCity);
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;

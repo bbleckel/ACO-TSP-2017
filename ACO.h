@@ -46,7 +46,7 @@ typedef struct _city {
 void printPoint(point2D p);
 void printCity(City c);
 int getRandomCity(vector<City> unvisited);
-double getLegPharo(City city1, City city2);
+double getLegPhero(City city1, City city2);
 
 typedef struct _ant {
     City city;
