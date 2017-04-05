@@ -151,7 +151,7 @@ void ACOSolver::initAllLegs() {
             Leg tempLeg;
             tempLeg.city1 = cities[i];
             tempLeg.city2 = cities[j];
-            tempLeg.phero = 1.0;
+            tempLeg.phero = PHERO_INITAL;
             legs.push_back(tempLeg);
         }
     }
@@ -367,28 +367,18 @@ int ACOSolver::getNextCity(Ant k) {
         double distToTempCity = calculateDistance(k.city.p, k.unvisited[i].p);
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
-        // cout << tempDenom << " ";
-        // printCity(k.unvisited[i]);
     }
     int i = 0;
     while(true) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
         double distToRandCity = calculateDistance(k.city.p, randCity.p);
-        // cout << "distance to rand city: " << distToRandCity << endl;
         double pheroOnLegToRand = getLegPhero(k.city, randCity);
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
-        // cout << denominator << endl;
-        // if (i == 100)
-        //     exit(0);
         double prob = ((double)rand())/RAND_MAX;
-        // cout << "prob: " << prob << ", pij: " << pij << endl << endl;
         if (prob < pij) {
-        //   newCity = randCity;
-        //   k.unvisited.erase(k.unvisited.begin() + randCityIndex);
-
           return randCityIndex;
         }
         i++;
@@ -416,8 +406,8 @@ void ACOSolver::solve() {
         }
 
         resetAnts();
-        if((iterations-1) % (ITERATIONS - (iterations-1) / 20) == 0) {
-            cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations == 1) {
+            cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
         }
         iterations++;
     }
