@@ -33,20 +33,18 @@ typedef struct _point2d {
     double x, y;
 } point2D;
 
-typedef struct _leg {
-    point2D city1, city2;
-    double phero;
-} Leg;
-
 typedef struct _city {
     point2D p;
     int ID;
 } City;
 
+typedef struct _leg {
+    City city1, city2;
+    double phero;
+} Leg;
+
 void printPoint(point2D p);
 void printCity(City c);
-int getRandomCity(vector<City> unvisited);
-double getLegPhero(City city1, City city2);
 
 typedef struct _ant {
     City city;
@@ -75,6 +73,8 @@ public:
     // helper functions
     bool inBSF(City city1, City city2);
     double calculateDistance(point2D City1, point2D City2);
+    int getRandomCity(vector<City> unvisited);
+    double getLegPhero(City city1, City city2);
 
 private:
     void initAllLegs();
