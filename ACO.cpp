@@ -163,12 +163,14 @@ void ACOSolver::initAnts() {
         a.unvisited = cities;
         int randCity = getRandomCity(a.unvisited);
         a.city = a.unvisited[randCity];
+        a.unvisited.erase(a.unvisited.begin() + randCity);
 
         ants.push_back(a);
     }
 }
 
 ACOSolver::ACOSolver(string fileName) {
+    srand(time(NULL));
     // constructor
     this->fileName = fileName;
     readFile();
@@ -323,22 +325,26 @@ void ACOSolver::EASPheroUpdate() {
 }
 
 void ACOSolver::buildTours() {
-    for (int c = 0; c < cities.size(); c++) {
+    for (int i = 0; i < ants.size(); i++) {
+        ants[i].tour.push_back(ants[i].city);
+    }
+    for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
-            City city = getNextCity(ants[i]);
+            // cout << i  << "**********************************************************************" << endl;
+            // printCity(ants[i].city);
+            int cityIndex = getNextCity(ants[i]);
+            City city = ants[i].unvisited[cityIndex];
             City oldCity = ants[i].city;
             ants[i].city = city;
+            ants[i].unvisited.erase(ants[i].unvisited.begin() + cityIndex);
             ants[i].tour.push_back(city);
 
             // ACS specific bits
             if (ALGTYPE == 1) {
                 ACSLocalPheroUpdate(oldCity, city);
             }
-
-
         }
     }
-    resetAnts();
 }
 
 void ACOSolver::resetAnts() {
@@ -346,13 +352,14 @@ void ACOSolver::resetAnts() {
         ants[i].unvisited = cities;
         int randCity = getRandomCity(ants[i].unvisited);
         ants[i].city = ants[i].unvisited[randCity];
+        ants[i].unvisited.erase(ants[i].unvisited.begin() + randCity);
+        ants[i].tour.clear();
     }
 }
 
-// gets a city for the ant to go to next
-City ACOSolver::getNextCity(Ant k) {
+// gets the index of a city for the ant to go to next
+int ACOSolver::getNextCity(Ant k) {
     double pij;
-    City newCity;
     double denominator = 0;
     for(int i = 0; i < k.unvisited.size(); i++) {
         double tempDenom = 0;
@@ -360,24 +367,32 @@ City ACOSolver::getNextCity(Ant k) {
         double distToTempCity = calculateDistance(k.city.p, k.unvisited[i].p);
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
+        // cout << tempDenom << " ";
+        // printCity(k.unvisited[i]);
     }
+    int i = 0;
     while(true) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
         double distToRandCity = calculateDistance(k.city.p, randCity.p);
+        // cout << "distance to rand city: " << distToRandCity << endl;
         double pheroOnLegToRand = getLegPhero(k.city, randCity);
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
-        double prob = rand() / RAND_MAX;
+        // cout << denominator << endl;
+        // if (i == 100)
+        //     exit(0);
+        double prob = ((double)rand())/RAND_MAX;
+        // cout << "prob: " << prob << ", pij: " << pij << endl << endl;
         if (prob < pij) {
-          newCity = randCity;
-          k.unvisited.erase(k.unvisited.begin() + randCityIndex);
-          break;
-        }
-    }
+        //   newCity = randCity;
+        //   k.unvisited.erase(k.unvisited.begin() + randCityIndex);
 
-    return newCity;
+          return randCityIndex;
+        }
+        i++;
+    }
 
 }
 
@@ -394,14 +409,17 @@ void ACOSolver::solve() {
 void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(iterations)) {
-        cout << iterations << endl;
         buildTours();
 
         updateBSF();
 
         EASPheroUpdate();
+
+        resetAnts();
         iterations++;
+        cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
     }
+    cout << endl << "Best after termination: " << bsfRouteLength << endl;
 }
 
 void ACOSolver::solveACS() {
@@ -413,18 +431,25 @@ void ACOSolver::solveACS() {
 
         ACSGlobalPheroUpdate();
 
+        resetAnts();
         iterations++;
+        // cout << "Best so far (iteration " << iterations << "): " << bsfRouteLength << endl;
     }
+    cout << endl << "Best after termination: " << bsfRouteLength << endl;
 }
 
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
+            cout << "Terminating because MAX number of itertaions (";
+            cout << ITERATIONS << ") met." << endl;
             return true;
         }
     }
     if (TERM == 2 || TERM == 3) {
-        if (bsfRoute.size()/optimal < OPTIMAL_DEVIATION) {
+        if (bsfRouteLength/optimal < OPTIMAL_DEVIATION) {
+            cout << "Terminating because reached " << OPTIMAL_DEVIATION;
+            cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
             return true;
         }
     }

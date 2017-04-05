@@ -100,7 +100,7 @@ private:
     void ACSLocalPheroUpdate(City cityA, City cityB);
     void EASPheroUpdate();
     void buildTours();
-    City getNextCity(Ant a);
+    int getNextCity(Ant a);
 };
 
 
