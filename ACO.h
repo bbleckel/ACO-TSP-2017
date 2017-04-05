@@ -13,7 +13,7 @@ using namespace std;
 // parameters to set
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 10; // number of ants
-const int ITERATIONS = 1000; // number of iterations
+const int ITERATIONS = 100; // number of iterations
 const double PHERO_INITAL = 0.01; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 1.0; // percentage from the optimal
                                         //within which our solution will stop iterating

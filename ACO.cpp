@@ -281,7 +281,7 @@ void ACOSolver::readFile() {
         inputFile.close();
     }
 
-    cout << "Printing cities!" << endl;
+    cout << "Printing cities! (" << cities.size() << ")" << endl;
     for(int i = 0; i < cities.size(); i++) {
         printCity(cities[i]);
     }
@@ -406,7 +406,7 @@ void ACOSolver::solve() {
         }
 
         resetAnts();
-        if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations == 1) {
+        if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
             cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
         }
         iterations++;
