@@ -22,7 +22,7 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
 double ACOSolver::calculateTourDistance(Ant a) {
     double totalDistance = 0;
     for(int i = 0; i < a.tour.size(); i++) {
-        double thisDistance = 0
+        double thisDistance = 0;
         if (i = (a.tour.size() - 1)) {
             thisDistance = calculateDistance(a.tour[i], a.tour[0])
         } else {

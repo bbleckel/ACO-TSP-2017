@@ -77,6 +77,7 @@ public:
     double calculateDistance(point2D City1, point2D City2);
     int getRandomCity(vector<City> unvisited);
     double getLegPhero(City city1, City city2);
+    double calculateTourDistance(Ant a);
 
 private:
     void initAllLegs();
