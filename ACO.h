@@ -14,6 +14,8 @@ using namespace std;
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 10; // number of ants
 const int ITERATIONS = 50; // number of iterations
+const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
+                                        //within which our solution will stop iterating
 const double ALPHA = 1.0; // pheromone influence
 const double BETA = 2.0; // heuristic influence
 const double RHO = 0.1; // evaporation
@@ -48,6 +50,7 @@ int getRandomCity(vector<City> unvisited);
 typedef struct _ant {
     City city;
     vector<City> unvisited;
+    vector<City> tour;
 } Ant;
 
 class ACOSolver {
@@ -55,6 +58,7 @@ public:
     ACOSolver(string fileName);
     ~ACOSolver();
 
+    vector<Ant> ants;
     vector<City> cities;
     vector<Leg> legs;
     vector<int> bsfRoute;
@@ -76,6 +80,7 @@ private:
     void readFile();
     void ACSPheroUpdate(double oldPhero);
     void EASPheroUpdate(double oldPhero);
+    void buildTours();
     void updateAntPos(Ant a);
 };
 

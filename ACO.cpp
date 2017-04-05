@@ -70,9 +70,17 @@ void ACOSolver::initAllLegs() {
             Leg tempLeg;
             tempLeg.city1 = cities[i].p;
             tempLeg.city2 = cities[j].p;
-            tempLeg.phero = 0.0;
+            tempLeg.phero = 1.0;
             legs.push_back(tempLeg);
         }
+    }
+
+    for (int i = 0; i < NUM_ANTS; i++) {
+        Ant a;
+        a.unvisited = cities;
+        a.city = getRandomCity(nat[i].unvisited);
+
+        ants.push_back(a);
     }
 }
 
@@ -183,6 +191,23 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
     }
 }
 
+void ACOSolver::buildTours() {
+    for (int c = 0; c < city.size(); c++) {
+        for (int i = 0; i < ants.size(); i++) {
+            City city = updateAntPos(ants[i]);
+            ants[i].tour.push_back(city);
+        }
+    }
+    resetAnts();
+}
+
+void ACOSolver::resetAnts() {
+    for (int i = 0; i < ants.size(); i++) {
+        ants[i].city = getRandomCity(ant[i].unvisited);
+        ants[i].unvisited =
+    }
+}
+
 City ACOSolver::updateAntPos(Ant k) {
     double pij;
     City newCity;
@@ -245,6 +270,7 @@ void ACOSolver::solve() {
 }
 // NOTES
 // render cities in OpenGL for lulz?
+
 void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(int iterations)) {
@@ -256,7 +282,7 @@ void ACOSolver::solveEAS() {
 void ACOSolver::solveACS() {
     int iterations = 0;
     while(!terminated(int iterations)) {
-
+        buildTours();
         iterations++;
     }
 }
@@ -269,6 +295,7 @@ bool ACOSolver::terminated(int iterations) {
      *      if TERM = 3, iteration will stop after either of the above
                 options are satisfied
      */
+    int optimal = 10628; //hard coded for att48. needs to be changed to reflect all files
     const double TERM = 1;
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
