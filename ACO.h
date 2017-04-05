@@ -18,7 +18,7 @@ const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
 const double ALPHA = 1.0; // pheromone influence
 const double BETA = 2.0; // heuristic influence
-const double RHO = 0.1; // evaporation
+const double RHO = 0.1; // evaporation (0 < RHO < 1)
 
 // this one only for EAS
 const int ELITISM_FACTOR = NUM_ANTS;
@@ -94,7 +94,7 @@ private:
     void initAnts();
     void resetAnts();
     void readFile();
-    void ACSPheroUpdate();
+    void ACSGlobalPheroUpdate();
     void EASPheroUpdate();
     void buildTours();
     City updateAntPos(Ant a);

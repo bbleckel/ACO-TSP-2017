@@ -262,13 +262,16 @@ void ACOSolver::readFile() {
 }
 
 // updates the pheromone level using the ACS update formula
-void ACOSolver::ACSPheroUpdate() {
+void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
         double newPhero = legs[i].phero;
         double deltaTotal = 0;
-
-        newPhero = (1 - RHO) * legs[i].phero + deltaTotal;
+        if inBSF(legs[i].city1, legs[i].city2) {
+            newPhero = (1 - RHO) * legs[i].phero + RHO * (1/bsfRouteLength);
+        } else {
+          newPhero = (1 - RHO) * legs[i].phero;
+        }
         legs[i].phero = newPhero;
     }
 }
@@ -362,7 +365,7 @@ void ACOSolver::solveACS() {
 
         updateBSF();
 
-        ACSPheroUpdate();
+        ACSGlobalPheroUpdate();
 
         iterations++;
     }
