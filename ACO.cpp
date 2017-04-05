@@ -19,6 +19,7 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
+// calculates total distance of the tour of an ant
 double ACOSolver::calculateTourDistance(Ant a) {
     double totalDistance = 0;
     for(int i = 0; i < a.tour.size(); i++) {
@@ -33,6 +34,7 @@ double ACOSolver::calculateTourDistance(Ant a) {
     return totalDistance;
 }
 
+// updates the bsf route and length
 void ACOSolver::updateBSF() {
   int localMinTourLength = INT_MAX;
   vector<City> localMinTour;
@@ -259,6 +261,7 @@ void ACOSolver::readFile() {
     }
 }
 
+// updates the pheromone level using the ACS update formula
 void ACOSolver::ACSPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
@@ -270,6 +273,7 @@ void ACOSolver::ACSPheroUpdate() {
     }
 }
 
+// updates the pheromone level using the EAS update formula
 void ACOSolver::EASPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
@@ -364,7 +368,7 @@ void ACOSolver::solveACS() {
     }
 }
 
-bool ACOSolver::terminated(int iterations) 
+bool ACOSolver::terminated(int iterations)
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
             return true;
