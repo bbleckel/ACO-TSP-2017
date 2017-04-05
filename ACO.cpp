@@ -201,7 +201,7 @@ City ACOSolver::updateAntPos(Ant k) {
             }
             iter++;
         }
-        double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA))
+        double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
     }
 }
 
