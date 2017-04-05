@@ -24,9 +24,9 @@ double ACOSolver::calculateTourDistance(Ant a) {
     for(int i = 0; i < a.tour.size(); i++) {
         double thisDistance = 0;
         if (i == (a.tour.size() - 1)) {
-            thisDistance = calculateDistance(a.tour[i].p, a.tour[0].p)
+            thisDistance = calculateDistance(a.tour[i].p, a.tour[0].p);
         } else {
-            thisDistance = calculateDistance(a.tour[i].p, a.tour[i+1].p)
+            thisDistance = calculateDistance(a.tour[i].p, a.tour[i+1].p);
         }
         totalDistance += thisDistance;
     }
