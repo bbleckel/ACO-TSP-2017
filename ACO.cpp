@@ -19,9 +19,9 @@ double ACOSolver::calculateDistance(point2D city1, point2D city2) {
     return distance;
 }
 
-City getRandomCity(vector<City> unvisited) {
+int getRandomCity(vector<City> unvisited) {
     int randomIndex = rand() % unvisited.size();
-    return unvisited[randomIndex];
+    return randomIndex;
 }
 
 // returns true if there is a path from city1 to city2 in the bsf path
@@ -185,24 +185,54 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
 
 City ACOSolver::updateAntPos(Ant k) {
     double pij;
-
+    City newCity;
     while() {
-        City randCity = getRandomCity(k.unvisited);
+        int randCityIndex = getRandomCity(k.unvisited);
+        City randCity = k.unvisited[randCityIndex];
         double distToRandCity = calculateDistance(k.city.p, randCity);
         double pheroOnLegToRand;
         int iter = 0;
         while(iter < legs.size()) {
-            if (legs[iter].city1 == k.city.p && legs[iter].city1 == randCity) {
+            if (legs[iter].city1 == k.city.p && legs[iter].city2 == randCity) {
                 pheroOnLegToRand = legs[iter].phero;
                 break;
-            } else if (legs[iter].city1 == randCity && legs[iter].city1 == k.city.p) {
+            } else if (legs[iter].city1 == randCity && legs[iter].city2 == k.city.p) {
                 pheroOnLegToRand = legs[iter].phero;
                 break;
             }
             iter++;
         }
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
+        double denominator;
+        for(int i = 0; i < k.unvisited.size(); i++) {
+            double tempDenom = 0;
+            double tempPhero = 0;
+            double distToTempCity = calculateDistance(k.city.p, k.unvisited[i]);
+            int j = 0;
+            while(j < legs.size()) {
+                if (legs[j].city1 == k.city.p && legs[j].city2 == k.unvisited[i]) {
+                    tempPhero = legs[j].phero;
+                    break;
+                } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
+                    tempPhero = legs[j].phero;
+                    break;
+                }
+                j++;
+            }
+            tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
+            denominator += tempDenom;
+        }
+        pij = numerator / denominator;
+        double prob = rand() / RAND_MAX;
+        if (prob < pij) {
+          newCity = randCity;
+          k.unvisited.erase(k.unvisited.begin() + randCityIndex);
+          break;
+        }
     }
+
+
+
 }
 
 void ACOSolver::solve() {

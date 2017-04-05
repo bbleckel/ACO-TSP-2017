@@ -43,6 +43,7 @@ typedef struct _city {
 
 void printPoint(point2D p);
 void printCity(City c);
+int getRandomCity(vector<City> unvisited);
 
 typedef struct _ant {
     City city;
