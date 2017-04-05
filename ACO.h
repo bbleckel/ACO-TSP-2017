@@ -10,8 +10,13 @@
 
 using namespace std;
 
+<<<<<<< HEAD
 // START PARAMETERS
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
+=======
+// parameters to set
+const int ALGTYPE = 0; // 0 for EAS, 1 for ACS
+>>>>>>> origin/master
 const int NUM_ANTS = 10; // number of ants
 const int ITERATIONS = 50; // number of iterations
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal

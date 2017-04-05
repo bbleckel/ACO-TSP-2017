@@ -119,7 +119,7 @@ bool ACOSolver::inBSF(City city1, City city2) {
 // puts all possible legs in a vector
 void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size() - 1; i++) {
-        bsfRoute[i] = i + 1;
+        bsfRoute.push_back(i + 1);
         bsfRouteLength = INT_MAX;
         for (int j = i + 1; j < cities.size(); j++) {
             Leg tempLeg;
@@ -237,7 +237,6 @@ void ACOSolver::readFile() {
     }
 
     string search = t.substr(0, t.find("."));
-    cout << "search is: " << search << endl;
 
     if(!inputFile.is_open()) {
         cerr << "ERROR: Could not open file" << endl;
@@ -245,11 +244,13 @@ void ACOSolver::readFile() {
     } else {
         while(getline(inputFile, line)) {
             if (line.substr(0, line.find(" ")) == search) {
-                optimal = stoi(line.substr(line.find(": ")));
-                cout << optimal << " optimal found" << endl;
+                line.erase(line.begin(), line.begin()+line.find(": ")+1);
+                optimal = stoi(line);
+                cout << "The optimal is " << optimal << endl;
                 break;
             }
         }
+        inputFile.close();
     }
 
     cout << "Printing cities!" << endl;
@@ -340,6 +341,7 @@ void ACOSolver::solve() {
 void ACOSolver::solveEAS() {
     int iterations = 0;
     while(!terminated(iterations)) {
+        cout << iterations << endl;
         buildTours();
 
         updateBSF();
@@ -362,8 +364,7 @@ void ACOSolver::solveACS() {
     }
 }
 
-bool ACOSolver::terminated(int iterations) {
-    int optimal = 10628; //hard coded for att48. needs to be changed to reflect all files
+bool ACOSolver::terminated(int iterations) 
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
             return true;
