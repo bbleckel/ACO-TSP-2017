@@ -186,6 +186,25 @@ void ACOSolver::EASPheroUpdate(double oldPhero) {
 City ACOSolver::updateAntPos(Ant k) {
     double pij;
     City newCity;
+    double denominator;
+    for(int i = 0; i < k.unvisited.size(); i++) {
+        double tempDenom = 0;
+        double tempPhero = 0;
+        double distToTempCity = calculateDistance(k.city.p, k.unvisited[i]);
+        int j = 0;
+        while(j < legs.size()) {
+            if (legs[j].city1 == k.city.p && legs[j].city2 == k.unvisited[i]) {
+                tempPhero = legs[j].phero;
+                break;
+            } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
+                tempPhero = legs[j].phero;
+                break;
+            }
+            j++;
+        }
+        tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
+        denominator += tempDenom;
+    }
     while() {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
@@ -203,25 +222,7 @@ City ACOSolver::updateAntPos(Ant k) {
             iter++;
         }
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
-        double denominator;
-        for(int i = 0; i < k.unvisited.size(); i++) {
-            double tempDenom = 0;
-            double tempPhero = 0;
-            double distToTempCity = calculateDistance(k.city.p, k.unvisited[i]);
-            int j = 0;
-            while(j < legs.size()) {
-                if (legs[j].city1 == k.city.p && legs[j].city2 == k.unvisited[i]) {
-                    tempPhero = legs[j].phero;
-                    break;
-                } else if (legs[j].city1 == k.unvisited[i] && legs[j].city2 == k.city.p) {
-                    tempPhero = legs[j].phero;
-                    break;
-                }
-                j++;
-            }
-            tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
-            denominator += tempDenom;
-        }
+
         pij = numerator / denominator;
         double prob = rand() / RAND_MAX;
         if (prob < pij) {
