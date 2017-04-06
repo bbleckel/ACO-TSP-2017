@@ -18,7 +18,7 @@ const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
 const double ALPHA = 1.0; // pheromone influence
-const double BETA = 4.0; // heuristic influence
+const double BETA = 5.0; // heuristic influence
 const double RHO = 0.1; // evaporation (0 < RHO < 1)
 
 // this one only for EAS

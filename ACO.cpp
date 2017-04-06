@@ -459,9 +459,9 @@ void ACOSolver::solve() {
 
         resetAnts();
 
-        if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
+        // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
             cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-        }
+        // }
         iterations++;
     }
     cout << endl << "Overall best: " << bsfRouteLength << endl;
