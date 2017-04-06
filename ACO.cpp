@@ -287,6 +287,25 @@ void ACOSolver::readFile() {
     }
 }
 
+// gets the index in the unvisited vector of the next city to go to greedily
+int ACOSolver::getGreedyNextCity(Ant k) {
+    double currMaxValue = 0;
+    int currChoiceIndex = 0;
+    double distToCity = 0;
+    double pheroOnLeg = 0;
+    double numerator = 0;
+    for (int i = 0; i < k.unvisited.size(); i++) {
+        distToCity = calculateDistance(k.city.p, k.unvisited[i].p);
+        pheroOnLeg = getLegPhero(k.city, k.unvisited[i]);
+        numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
+        if (numerator > currMaxValue) {
+            currMaxValue = numerator;
+            currChoiceIndex = i;
+        }
+    }
+    return currChoiceIndex;
+}
+
 // updates the pheromone level using the ACS global update formula
 void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
@@ -330,16 +349,26 @@ void ACOSolver::buildTours() {
     }
     for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
-            int cityIndex = getNextCity(ants[i]);
-            City city = ants[i].unvisited[cityIndex];
-            City oldCity = ants[i].city;
-            ants[i].city = city;
-            ants[i].unvisited.erase(ants[i].unvisited.begin() + cityIndex);
-            ants[i].tour.push_back(city);
-
-            // ACS specific bits
             if (ALGTYPE == 1) {
+                double prob = ((double)rand())/RAND_MAX;
+                int cityIndex;
+                if (prob < Q0) {
+                    cityIndex = getGreedyNextCity(ants[i]);
+                } else {
+                    cityIndex = getNextCity(ants[i]);
+                }
+                City city = ants[i].unvisited[cityIndex];
+                City oldCity = ants[i].city;
+                ants[i].city = city;
+                ants[i].unvisited.erase(ants[i].unvisited.begin() + cityIndex);
+                ants[i].tour.push_back(city);
                 ACSLocalPheroUpdate(oldCity, city);
+            } else {
+                int cityIndex = getNextCity(ants[i]);
+                City city = ants[i].unvisited[cityIndex];
+                ants[i].city = city;
+                ants[i].unvisited.erase(ants[i].unvisited.begin() + cityIndex);
+                ants[i].tour.push_back(city);
             }
         }
     }
@@ -429,6 +458,7 @@ void ACOSolver::solve() {
         }
 
         resetAnts();
+
         if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
             cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
         }
@@ -437,6 +467,8 @@ void ACOSolver::solve() {
     cout << endl << "Overall best: " << bsfRouteLength << endl;
     cout << "Optimal (from file): " << optimal << endl;
 }
+
+
 // NOTES
 // render cities in OpenGL for lulz?
 

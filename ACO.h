@@ -12,13 +12,13 @@ using namespace std;
 
 // parameters to set
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
-const int NUM_ANTS = 10; // number of ants
-const int ITERATIONS = 100; // number of iterations
+const int NUM_ANTS = 20; // number of ants
+const int ITERATIONS = 10000; // number of iterations
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
 const double ALPHA = 1.0; // pheromone influence
-const double BETA = 2.0; // heuristic influence
+const double BETA = 4.0; // heuristic influence
 const double RHO = 0.1; // evaporation (0 < RHO < 1)
 
 // this one only for EAS
@@ -74,7 +74,7 @@ public:
 
     string fileName;
     int optimal;
-    
+
     double tau_0; //length of nearest neighbor tour, can we set that here? it's 1/(n·L_(nn))
 
     /* solver functions */
@@ -96,6 +96,7 @@ private:
     void initAnts();
     void resetAnts();
     void readFile();
+    int getGreedyNextCity(Ant k);
     void ACSGlobalPheroUpdate();
     void ACSLocalPheroUpdate(City cityA, City cityB);
     void EASPheroUpdate();
