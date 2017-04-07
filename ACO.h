@@ -35,7 +35,7 @@ const double Q0 = 0.9;
  *      if TERM = 3, iteration will stop after either of the above
             options are satisfied
  */
-const double TERM = 3;
+const double TERM = 1;
 // END PARAMETERS
 
 typedef struct _point2d {

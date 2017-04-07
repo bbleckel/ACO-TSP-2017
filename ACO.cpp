@@ -161,14 +161,15 @@ bool ACOSolver::inBSF(City city1, City city2) {
 void ACOSolver::initAllLegs() {
     for (int i = 0; i < cities.size(); i++) {
         vector<Leg> tempVect;
-        for (int j = 0; j < cities.size(); i++) {
+        for (int j = 0; j < cities.size(); j++) {
             Leg tempLeg;
             tempLeg.city1 = cities[i];
             tempLeg.city2 = cities[j];
-            tempLeg.phero = PHERO_INITAL;
             if (i != j) {
+                tempLeg.phero = PHERO_INITAL;
                 tempLeg.length = calculateDistance(tempLeg.city1.p, tempLeg.city2.p);
             } else {
+                tempLeg.phero = 0;
                 tempLeg.length = INT_MAX;
             }
             tempVect.push_back(tempLeg);
@@ -355,7 +356,7 @@ void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
     int i = cityA.ID;
     int j = cityB.ID;
 
-    legs[i][j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
+    legs[i][j].phero = ((1 - EPSILON) * legs[i][j].phero) + (EPSILON * tau_0);
     legs[j][i].phero = legs[i][j].phero;
 
     // for(int j = 0; j < legs.size(); j++) {
@@ -484,9 +485,12 @@ void ACOSolver::solve() {
     }
     int iterations = 1;
     while(!terminated(iterations)) {
+        cout << "a\n";
         buildTours();
+        cout << "b\n";
 
         updateBSF();
+        cout << "c\n";
 
         if (ALGTYPE == 1) {
             ACSGlobalPheroUpdate();
