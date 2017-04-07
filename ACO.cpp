@@ -344,9 +344,6 @@ void ACOSolver::EASPheroUpdate() {
 }
 
 void ACOSolver::buildTours() {
-    for (int i = 0; i < ants.size(); i++) {
-        ants[i].tour.push_back(ants[i].city);
-    }
     for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
             if (ALGTYPE == 1) {
@@ -381,6 +378,7 @@ void ACOSolver::resetAnts() {
         ants[i].city = ants[i].unvisited[randCity];
         ants[i].unvisited.erase(ants[i].unvisited.begin() + randCity);
         ants[i].tour.clear();
+        ants[i].tour.push_back(ants[i].city);
     }
 }
 
@@ -464,7 +462,9 @@ void ACOSolver::solve() {
         // }
         iterations++;
     }
-    cout << endl << "Overall best: " << bsfRouteLength << endl;
+    double perc = (1.0-((double)optimal/(double)bsfRouteLength));
+    cout << endl << "Overall best: " << bsfRouteLength << " (";
+    cout << perc*100 << " percent from optimal)." << endl;
     cout << "Optimal (from file): " << optimal << endl;
 }
 
@@ -481,7 +481,7 @@ bool ACOSolver::terminated(int iterations) {
         }
     }
     if (TERM == 2 || TERM == 3) {
-        if (bsfRouteLength/optimal < OPTIMAL_DEVIATION) {
+        if ((1.0-((double)optimal/(double)bsfRouteLength)) < OPTIMAL_DEVIATION) {
             cout << "Terminating because reached " << OPTIMAL_DEVIATION;
             cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
             return true;
