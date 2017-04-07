@@ -50,6 +50,7 @@ typedef struct _city {
 typedef struct _leg {
     City city1, city2;
     double phero;
+    double length;
 } Leg;
 
 void printPoint(point2D p);
@@ -68,7 +69,7 @@ public:
 
     vector<Ant> ants;
     vector<City> cities;
-    vector<Leg> legs;
+    vector<vector<Leg> > legs;
     vector<int> bsfRoute;
     int bsfRouteLength;
 

@@ -143,17 +143,35 @@ bool ACOSolver::inBSF(City city1, City city2) {
 }
 
 // puts all possible legs in a vector
+// void ACOSolver::initAllLegs() {
+//     for (int i = 0; i < cities.size() - 1; i++) {
+//         bsfRoute.push_back(i + 1);
+//         bsfRouteLength = INT_MAX;
+//         for (int j = i + 1; j < cities.size(); j++) {
+//             Leg tempLeg;
+//             tempLeg.city1 = cities[i];
+//             tempLeg.city2 = cities[j];
+//             tempLeg.phero = PHERO_INITAL;
+//             legs.push_back(tempLeg);
+//         }
+//     }
+// }
 void ACOSolver::initAllLegs() {
-    for (int i = 0; i < cities.size() - 1; i++) {
-        bsfRoute.push_back(i + 1);
-        bsfRouteLength = INT_MAX;
-        for (int j = i + 1; j < cities.size(); j++) {
+    for (int i = 0; i < cities.size(); i++) {
+        vector<Leg> tempVect;
+        for (int j = 0; j < cities.size(); i++) {
             Leg tempLeg;
             tempLeg.city1 = cities[i];
             tempLeg.city2 = cities[j];
             tempLeg.phero = PHERO_INITAL;
-            legs.push_back(tempLeg);
+            if (i != j) {
+                tempLeg.length = calculateDistance(tempLeg.city1.p, tempLeg.city2.p);
+            } else {
+                tempLeg.length = INT_MAX;
+            }
+            tempVect.push_back(tempLeg);
         }
+        legs.push_back(tempVect);
     }
 }
 
@@ -313,36 +331,46 @@ int ACOSolver::getGreedyNextCity(Ant k) {
 void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
-        double newPhero = legs[i].phero;
-        if (inBSF(legs[i].city1, legs[i].city2)) {
-            newPhero = (1 - RHO) * legs[i].phero + RHO * (1/bsfRouteLength);
-        } else {
-          newPhero = (1 - RHO) * legs[i].phero;
+        for (int j = 0; j < legs[i].size(); j++) {
+            if (i != j) {
+                double newPhero;
+                if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
+                    newPhero = (1 - RHO) * legs[i][j].phero + RHO * (1/bsfRouteLength);
+                } else {
+                  newPhero = (1 - RHO) * legs[i][j].phero;
+                }
+                legs[i][j].phero = newPhero;
+            }
         }
-        legs[i].phero = newPhero;
     }
 }
 
 // updates the pheromone level using the ACS local update formula
 void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
     // find correct leg based on cities
+    int i = cityA.ID;
+    int j = cityB.ID;
 
-    for(int j = 0; j < legs.size(); j++) {
-        if (legMatchesCities(legs[j], cityA, cityB)) {
-            legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
-            break;
-        }
-    }
+    legs[i][j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
+    legs[j][i].phero = legs[i][j].phero;
 
+    // for(int j = 0; j < legs.size(); j++) {
+    //     if (legMatchesCities(legs[j], cityA, cityB)) {
+    //         legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
+    //         break;
+    //     }
+    // }
 }
 
 // updates the pheromone level using the EAS update formula
 void ACOSolver::EASPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
-        double newPhero = legs[i].phero;
-        // newPhero = (1 - RHO) * legs[i].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
-        legs[i].phero = newPhero;
+        for (int j = 0; j < legs[i].size(); j++) {
+            double newPhero = legs[i][j].phero;
+            // newPhero = (1 - RHO) * legs[i].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+            legs[i][j].phero = newPhero;
+        }
     }
 }
 
