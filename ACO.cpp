@@ -66,32 +66,34 @@ int ACOSolver::getRandomCity(vector<City> cityVect) {
 
 // gets the pheromone level on the leg between to input cities
 double ACOSolver::getLegPhero(City cityA, City cityB) {
-  double pheroLevel = 0;
-  for(int j = 0; j < legs.size(); j++) {
-      if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
-          pheroLevel = legs[j].phero;
-          break;
-      } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
-          pheroLevel = legs[j].phero;
-          break;
-      }
-  }
-  return pheroLevel;
+  // double pheroLevel = 0;
+  // for(int j = 0; j < legs.size(); j++) {
+  //     if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
+  //         pheroLevel = legs[j].phero;
+  //         break;
+  //     } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
+  //         pheroLevel = legs[j].phero;
+  //         break;
+  //     }
+  // }
+  // return pheroLevel;
+  return legs[cityA.ID][cityB.ID].phero;
 }
 
 // gets the pheromone level on the leg between to input cities
 Leg ACOSolver::getLeg(City cityA, City cityB) {
-  Leg theLeg;
-  for(int j = 0; j < legs.size(); j++) {
-      if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
-          theLeg = legs[j];
-          break;
-      } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
-          theLeg = legs[j];
-          break;
-      }
-  }
-  return theLeg;
+  // Leg theLeg;
+  // for(int j = 0; j < legs.size(); j++) {
+  //     if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
+  //         theLeg = legs[j];
+  //         break;
+  //     } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
+  //         theLeg = legs[j];
+  //         break;
+  //     }
+  // }
+  // return theLeg;
+  return legs[cityA.ID][cityB.ID];
 }
 
 bool ACOSolver::legMatchesCities(Leg theLeg, City cityA, City cityB) {
@@ -316,8 +318,10 @@ int ACOSolver::getGreedyNextCity(Ant k) {
     double pheroOnLeg = 0;
     double numerator = 0;
     for (int i = 0; i < k.unvisited.size(); i++) {
-        distToCity = calculateDistance(k.city.p, k.unvisited[i].p);
-        pheroOnLeg = getLegPhero(k.city, k.unvisited[i]);
+        // distToCity = calculateDistance(k.city.p, k.unvisited[i].p);
+        distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
+        // pheroOnLeg = getLegPhero(k.city, k.unvisited[i]);
+        pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
         numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
         if (numerator > currMaxValue) {
             currMaxValue = numerator;
@@ -419,8 +423,10 @@ int ACOSolver::getNextCity(Ant k) {
     double denominator = 0;
     for(int i = 0; i < k.unvisited.size(); i++) {
         double tempDenom = 0;
-        double tempPhero = getLegPhero(k.city, k.unvisited[i]);
-        double distToTempCity = calculateDistance(k.city.p, k.unvisited[i].p);
+        // double tempPhero = getLegPhero(k.city, k.unvisited[i]);
+        double tempPhero = legs[k.city.ID][k.unvisited[i].ID].phero;
+        // double distToTempCity = calculateDistance(k.city.p, k.unvisited[i].p);
+        double distToTempCity = legs[k.city.ID][k.unvisited[i].ID].length;
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
     }
@@ -428,8 +434,10 @@ int ACOSolver::getNextCity(Ant k) {
     while(true) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
-        double distToRandCity = calculateDistance(k.city.p, randCity.p);
-        double pheroOnLegToRand = getLegPhero(k.city, randCity);
+        // double distToRandCity = calculateDistance(k.city.p, randCity.p);
+        double distToRandCity = legs[k.city.ID][randCity.ID].length;
+        // double pheroOnLegToRand = getLegPhero(k.city, randCity);
+        double pheroOnLegToRand = legs[k.city.ID][randCity.ID].phero;
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
