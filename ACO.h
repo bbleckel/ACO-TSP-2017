@@ -17,9 +17,9 @@ const int ITERATIONS = 300; // number of iterations (200-300 should do it)
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
-const double ALPHA = 1.0; // pheromone influence
+const double ALPHA = 1.5; // pheromone influence
 const double BETA = 5.0; // heuristic influence
-const double RHO = 0.1; // evaporation (0 < RHO < 1)
+const double RHO = 0.01; // evaporation (0 < RHO < 1)
 
 // this one only for EAS
 const int ELITISM_FACTOR = NUM_ANTS;
@@ -75,7 +75,7 @@ public:
     string fileName;
     int optimal;
 
-    double tau_0; //length of nearest neighbor tour, can we set that here? it's 1/(n·L_(nn))
+    double tau_0; //length of nearest neighbor tour, set by setTau()
 
     /* solver functions */
     void solve();

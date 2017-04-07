@@ -174,7 +174,9 @@ ACOSolver::ACOSolver(string fileName) {
     // constructor
     this->fileName = fileName;
     readFile();
-
+    cout << ALGTYPE << " " << NUM_ANTS << " " << ITERATIONS << " " << PHERO_INITAL
+            << " " << OPTIMAL_DEVIATION << " " << ALPHA << " " << BETA << " "
+            << RHO << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
     initAllLegs();
     initAnts();
 }
@@ -288,6 +290,7 @@ void ACOSolver::readFile() {
 }
 
 // gets the index in the unvisited vector of the next city to go to greedily
+// checked by JH 4/7, works
 int ACOSolver::getGreedyNextCity(Ant k) {
     double currMaxValue = 0;
     int currChoiceIndex = 0;
@@ -467,10 +470,6 @@ void ACOSolver::solve() {
     cout << perc*100 << " percent from optimal)." << endl;
     cout << "Optimal (from file): " << optimal << endl;
 }
-
-
-// NOTES
-// render cities in OpenGL for lulz?
 
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
