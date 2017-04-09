@@ -512,9 +512,9 @@ void ACOSolver::solve() {
         // }
         iterations++;
     }
-    double perc = (1.0-((double)optimal/(double)bsfRouteLength));
+    double perc = ((double)bsfRouteLength / (double)optimal);
     cout << endl << "Overall best: " << bsfRouteLength << " (";
-    cout << perc*100 << " percent from optimal)." << endl;
+    cout << perc*100 << " percent of the optimal)." << endl;
     cout << "Optimal (from file): " << optimal << endl;
 }
 
