@@ -144,21 +144,22 @@ bool ACOSolver::inBSF(City city1, City city2) {
     return isInBSF;
 }
 
-// puts all possible legs in a vector
-// void ACOSolver::initAllLegs() {
-//     for (int i = 0; i < cities.size() - 1; i++) {
-//         bsfRoute.push_back(i + 1);
-//         bsfRouteLength = INT_MAX;
-//         for (int j = i + 1; j < cities.size(); j++) {
-//             Leg tempLeg;
-//             tempLeg.city1 = cities[i];
-//             tempLeg.city2 = cities[j];
-//             tempLeg.phero = PHERO_INITAL;
-//             legs.push_back(tempLeg);
-//         }
-//     }
-// }
+
 void ACOSolver::initAllLegs() {
+    // puts all possible legs in a vector
+    // void ACOSolver::initAllLegs() {
+    //     for (int i = 0; i < cities.size() - 1; i++) {
+    //         bsfRoute.push_back(i + 1);
+    //         bsfRouteLength = INT_MAX;
+    //         for (int j = i + 1; j < cities.size(); j++) {
+    //             Leg tempLeg;
+    //             tempLeg.city1 = cities[i];
+    //             tempLeg.city2 = cities[j];
+    //             tempLeg.phero = PHERO_INITAL;
+    //             legs.push_back(tempLeg);
+    //         }
+    //     }
+    // }
     for (int i = 0; i < cities.size(); i++) {
         vector<Leg> tempVect;
         for (int j = 0; j < cities.size(); j++) {
@@ -221,7 +222,7 @@ void ACOSolver::readFile() {
         exit(1);
     } else {
         while(getline(inputFile, line)) {
-            if (line.front() == '1') {
+            if (line.front() == '1' && started == 0) {
                 started = 1;
                 string entry;
                 string delimiter = " ";
@@ -229,7 +230,7 @@ void ACOSolver::readFile() {
                 City c;
 
                 // store line number as city ID
-                ID = stoi(line.substr(0, line.find(delimiter)));
+                ID = (stoi(line.substr(0, line.find(delimiter)))) - 1;
                 line.erase(0, line.find(delimiter) + delimiter.length());
 
                 // save coordinates
@@ -256,7 +257,7 @@ void ACOSolver::readFile() {
                 City c;
 
                 // store line number as city ID
-                ID = stoi(line.substr(0, line.find(delimiter)));
+                ID = (stoi(line.substr(0, line.find(delimiter)))) - 1;
                 line.erase(0, line.find(delimiter) + delimiter.length());
 
                 x = stof(line.substr(0, line.find(delimiter)));
@@ -311,7 +312,6 @@ void ACOSolver::readFile() {
 }
 
 // gets the index in the unvisited vector of the next city to go to greedily
-// checked by JH 4/7, works
 int ACOSolver::getGreedyNextCity(Ant k) {
     double currMaxValue = 0;
     int currChoiceIndex = 0;
