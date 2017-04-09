@@ -57,6 +57,7 @@ void ACOSolver::updateBSF() {
     if (localMinTourLength < bsfRouteLength) {
         bsfRouteLength = localMinTourLength;
         for (int j = 0; j < localMinTour.size(); j++) {
+            // set cities to best tour cities
             bsfRoute[j] = localMinTour[j].ID;
         }
     }
@@ -101,6 +102,7 @@ Leg ACOSolver::getLeg(City cityA, City cityB) {
 }
 
 bool ACOSolver::legMatchesCities(Leg theLeg, City cityA, City cityB) {
+    // leg from A to B = leg from B to A, return true either way
     if (theLeg.city1.ID == cityA.ID && theLeg.city2.ID == cityB.ID) {
         return true;
     } else if (theLeg.city1.ID == cityB.ID && theLeg.city2.ID == cityA.ID) {
@@ -148,7 +150,18 @@ bool ACOSolver::inBSF(City city1, City city2) {
     return isInBSF;
 }
 
-// initializes the 2d vector of legs
+bool ACOSolver::inTour(Ant a, Leg l) {
+    // iterate through ant's tour
+    for(int i = 0; i < a.tour.size() - 1; i++) {
+        // if the leg is present, return true
+        if(legMatchesCities(l, a.tour[i], a.tour[i + 1])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// initializes the 2D vector of legs
 void ACOSolver::initAllLegs() {
     // puts all possible legs in a vector
     // void ACOSolver::initAllLegs() {
@@ -159,12 +172,13 @@ void ACOSolver::initAllLegs() {
     //             Leg tempLeg;
     //             tempLeg.city1 = cities[i];
     //             tempLeg.city2 = cities[j];
-    //             tempLeg.phero = PHERO_INITAL;
+    //             tempLeg.phero = INITAL;
     //             legs.push_back(tempLeg);
     //         }
     //     }
     // }
     for (int i = 0; i < cities.size(); i++) {
+        // place cities into BSF (for an intial tour)
         bsfRoute.push_back(i);
         vector<Leg> tempVect;
         for (int j = 0; j < cities.size(); j++) {
@@ -178,10 +192,13 @@ void ACOSolver::initAllLegs() {
                 tempLeg.phero = 0;
                 tempLeg.length = INT_MAX;
             }
+            
             tempVect.push_back(tempLeg);
         }
+        // add to total legs
         legs.push_back(tempVect);
     }
+    // guarantees this route will be replaced
     bsfRouteLength = INT_MAX;
 }
 
@@ -380,8 +397,26 @@ void ACOSolver::EASPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
         for (int j = 0; j < legs[i].size(); j++) {
-            double newPhero = legs[i][j].phero;
-            // newPhero = (1 - RHO) * legs[i].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+            double newPhero;
+            
+            double deltaTotal = 0;
+            // iterate through ants, adding 1 / tour length if this leg is in their tour
+            for(int i = 0; i < ants.size(); i++) {
+                if(inTour(ants[i], legs[i][j])) {
+                    // add to total
+                    deltaTotal += 1 / calculateTourDistance(ants[i]);
+                }
+            }
+            double deltaTauBest = 0;
+            // add if this leg is in BSF tour
+            if(inBSF(legs[i][j].city1, legs[i][j].city2)) {
+                deltaTauBest = 1 / bsfRouteLength;
+            }
+            
+            newPhero = (1 - RHO) * legs[i][j].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+            
+//            newPhero = (1 - RHO) * legs[i][j].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
+            
             legs[i][j].phero = newPhero;
         }
     }
@@ -391,7 +426,8 @@ void ACOSolver::buildTours() {
     for (int c = 0; c < cities.size() - 1; c++) {
         for (int i = 0; i < ants.size(); i++) {
             if (ALGTYPE == 1) {
-                double prob = ((double)rand())/RAND_MAX;
+                // ACS
+                double prob = ((double) rand()) / RAND_MAX;
                 int cityIndex;
                 if (prob < Q0) {
                     cityIndex = getGreedyNextCity(ants[i]);
@@ -405,6 +441,7 @@ void ACOSolver::buildTours() {
                 ants[i].tour.push_back(city);
                 ACSLocalPheroUpdate(oldCity, city);
             } else {
+                // EAS
                 int cityIndex = getNextCity(ants[i]);
                 City city = ants[i].unvisited[cityIndex];
                 ants[i].city = city;
@@ -450,7 +487,7 @@ int ACOSolver::getNextCity(Ant k) {
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
         pij = numerator / denominator;
-        double prob = ((double)rand())/RAND_MAX;
+        double prob = ((double) rand())/RAND_MAX;
         if (prob < pij) {
             return randCityIndex;
         }
@@ -493,7 +530,7 @@ void ACOSolver::solve() {
     }
     int iterations = 1;
     while(!terminated(iterations)) {
-        cout << "Iteration " << iterations << endl;
+//        cout << "Iteration " << iterations << endl;
         buildTours();
 
         updateBSF();
@@ -506,10 +543,10 @@ void ACOSolver::solve() {
 
         resetAnts();
 
-        // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
-        cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-        cout << "**********************************************************************" << endl;
-        // }
+        if((ITERATIONS - iterations) % (ITERATIONS / 10) == 0 || iterations <= 10) {
+            cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+            cout << "**********************************************************************" << endl;
+        }
         iterations++;
     }
     double perc = ((double)bsfRouteLength / (double)optimal);
@@ -521,7 +558,7 @@ void ACOSolver::solve() {
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
-            cout << "Terminating because MAX number of itertaions (";
+            cout << "Terminating because MAX number of iterations (";
             cout << ITERATIONS << ") met." << endl;
             return true;
         }
@@ -536,3 +573,8 @@ bool ACOSolver::terminated(int iterations) {
 
     return false;
 }
+
+// legs contains duplicates (a->b = b->a)
+// actually count distance for bsfDistance in initAllLegs?
+// should pheromone be two way or one way?
+// save some calculation time using legs as routes instead of cities (so distance is stored)

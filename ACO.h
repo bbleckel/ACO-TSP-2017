@@ -11,7 +11,7 @@
 using namespace std;
 
 // parameters to set
-const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
+const int ALGTYPE = 0; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 30; // number of ants
 const int ITERATIONS = 300; // number of iterations (200-300 should do it)
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
@@ -84,6 +84,7 @@ public:
 
     // helper functions
     bool inBSF(City city1, City city2);
+    bool inTour(Ant a, Leg l);
     double calculateDistance(point2D City1, point2D City2);
     int getRandomCity(vector<City> unvisited);
     double getLegPhero(City city1, City city2);
