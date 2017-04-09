@@ -71,7 +71,7 @@ public:
     vector<City> cities;
     vector<vector<Leg> > legs;
     vector<int> bsfRoute;
-    int bsfRouteLength;
+    double bsfRouteLength;
 
     string fileName;
     int optimal;

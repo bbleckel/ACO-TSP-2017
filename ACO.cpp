@@ -36,21 +36,23 @@ double ACOSolver::calculateTourDistance(Ant a) {
 
 // updates the bsf route and length
 void ACOSolver::updateBSF() {
-    int localMinTourLength = INT_MAX;
+    double localMinTourLength = INT_MAX;
     vector<City> localMinTour;
 
     // go through each tour that was built and calculate total distance of tour
     for (int i = 0; i < ants.size(); i++) {
         double tourLength = calculateTourDistance(ants[i]);
         if (tourLength < localMinTourLength) {
-            cout << "tourLength: " << tourLength << " localMinTourLength: " << localMinTourLength << endl;
+            // cout << "tourLength: " << tourLength << " localMinTourLength: " << localMinTourLength << endl;
             localMinTourLength = tourLength;
+            // cout << "updated localMinTourLength: " << localMinTourLength << endl;
             localMinTour = ants[i].tour;
+
         }
 
     }
-    cout << "final localMinTourLength: " << localMinTourLength << endl;
-    cout << "current bsfRouteLength: " << bsfRouteLength << endl;
+    // cout << "final localMinTourLength: " << localMinTourLength << endl;
+    // cout << "current bsfRouteLength: " << bsfRouteLength << endl;
     // replace bsfRoute if necessary
     if (localMinTourLength < bsfRouteLength) {
         bsfRouteLength = localMinTourLength;
@@ -146,7 +148,7 @@ bool ACOSolver::inBSF(City city1, City city2) {
     return isInBSF;
 }
 
-
+// initializes the 2d vector of legs
 void ACOSolver::initAllLegs() {
     // puts all possible legs in a vector
     // void ACOSolver::initAllLegs() {
@@ -183,6 +185,7 @@ void ACOSolver::initAllLegs() {
     bsfRouteLength = INT_MAX;
 }
 
+// initializes the vector of ants
 void ACOSolver::initAnts() {
     for (int i = 0; i < NUM_ANTS; i++) {
         Ant a;
@@ -327,7 +330,8 @@ int ACOSolver::getGreedyNextCity(Ant k) {
         distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
         // pheroOnLeg = getLegPhero(k.city, k.unvisited[i]);
         pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
-        numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
+        // numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
+        numerator = pheroOnLeg * pow((1 / distToCity), BETA);
         if (numerator > currMaxValue) {
             currMaxValue = numerator;
             currChoiceIndex = i;
@@ -489,6 +493,7 @@ void ACOSolver::solve() {
     }
     int iterations = 1;
     while(!terminated(iterations)) {
+        cout << "Iteration " << iterations << endl;
         buildTours();
 
         updateBSF();
@@ -503,6 +508,7 @@ void ACOSolver::solve() {
 
         // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
         cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        cout << "**********************************************************************" << endl;
         // }
         iterations++;
     }
