@@ -56,6 +56,7 @@ void ACOSolver::updateBSF() {
             // set cities to best tour cities
             bsfRoute[j] = localMinTour[j].ID;
         }
+        // re-label legs in bsf
         for (int i = 0; i < cities.size(); i++) {
             for (int j = 0; j < cities.size(); j++) {
                 if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
@@ -76,33 +77,11 @@ int ACOSolver::getRandomCity(vector<City> cityVect) {
 
 // gets the pheromone level on the leg between to input cities
 double ACOSolver::getLegPhero(City cityA, City cityB) {
-    // double pheroLevel = 0;
-    // for(int j = 0; j < legs.size(); j++) {
-    //     if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
-    //         pheroLevel = legs[j].phero;
-    //         break;
-    //     } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
-    //         pheroLevel = legs[j].phero;
-    //         break;
-    //     }
-    // }
-    // return pheroLevel;
     return legs[cityA.ID][cityB.ID].phero;
 }
 
 // gets the pheromone level on the leg between to input cities
 Leg ACOSolver::getLeg(City cityA, City cityB) {
-    // Leg theLeg;
-    // for(int j = 0; j < legs.size(); j++) {
-    //     if (legs[j].city1.ID == cityA.ID && legs[j].city2.ID == cityB.ID) {
-    //         theLeg = legs[j];
-    //         break;
-    //     } else if (legs[j].city1.ID == cityB.ID && legs[j].city2.ID == cityA.ID) {
-    //         theLeg = legs[j];
-    //         break;
-    //     }
-    // }
-    // return theLeg;
     return legs[cityA.ID][cityB.ID];
 }
 
@@ -168,20 +147,6 @@ bool ACOSolver::inTour(Ant a, Leg l) {
 
 // initializes the 2D vector of legs
 void ACOSolver::initAllLegs() {
-    // puts all possible legs in a vector
-    // void ACOSolver::initAllLegs() {
-    //     for (int i = 0; i < cities.size() - 1; i++) {
-    //         bsfRoute.push_back(i + 1);
-    //         bsfRouteLength = INT_MAX;
-    //         for (int j = i + 1; j < cities.size(); j++) {
-    //             Leg tempLeg;
-    //             tempLeg.city1 = cities[i];
-    //             tempLeg.city2 = cities[j];
-    //             tempLeg.phero = INITAL;
-    //             legs.push_back(tempLeg);
-    //         }
-    //     }
-    // }
     for (int i = 0; i < cities.size(); i++) {
         // place cities into BSF (for an intial tour)
         bsfRoute.push_back(i);
@@ -349,11 +314,8 @@ int ACOSolver::getGreedyNextCity(Ant k) {
     double pheroOnLeg = 0;
     double numerator = 0;
     for (int i = 0; i < k.unvisited.size(); i++) {
-        // distToCity = calculateDistance(k.city.p, k.unvisited[i].p);
         distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
-        // pheroOnLeg = getLegPhero(k.city, k.unvisited[i]);
         pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
-        // numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
         numerator = pheroOnLeg * pow((1 / distToCity), BETA);
         if (numerator > currMaxValue) {
             currMaxValue = numerator;
@@ -389,13 +351,6 @@ void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
 
     legs[i][j].phero = ((1 - EPSILON) * legs[i][j].phero) + (EPSILON * tau_0);
     legs[j][i].phero = legs[i][j].phero;
-
-    // for(int j = 0; j < legs.size(); j++) {
-    //     if (legMatchesCities(legs[j], cityA, cityB)) {
-    //         legs[j].phero = ((1 - EPSILON) * legs[j].phero) + (EPSILON * tau_0);
-    //         break;
-    //     }
-    // }
 }
 
 // updates the pheromone level using the EAS update formula
@@ -473,9 +428,7 @@ int ACOSolver::getNextCity(Ant k) {
     double denominator = 0;
     for(int i = 0; i < k.unvisited.size(); i++) {
         double tempDenom = 0;
-        // double tempPhero = getLegPhero(k.city, k.unvisited[i]);
         double tempPhero = legs[k.city.ID][k.unvisited[i].ID].phero;
-        // double distToTempCity = calculateDistance(k.city.p, k.unvisited[i].p);
         double distToTempCity = legs[k.city.ID][k.unvisited[i].ID].length;
         tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
         denominator += tempDenom;
@@ -484,9 +437,7 @@ int ACOSolver::getNextCity(Ant k) {
     while(true) {
         int randCityIndex = getRandomCity(k.unvisited);
         City randCity = k.unvisited[randCityIndex];
-        // double distToRandCity = calculateDistance(k.city.p, randCity.p);
         double distToRandCity = legs[k.city.ID][randCity.ID].length;
-        // double pheroOnLegToRand = getLegPhero(k.city, randCity);
         double pheroOnLegToRand = legs[k.city.ID][randCity.ID].phero;
         double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
 
