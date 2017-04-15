@@ -51,6 +51,7 @@ typedef struct _leg {
     City city1, city2;
     double phero;
     double length;
+    bool inBSF;
 } Leg;
 
 void printPoint(point2D p);

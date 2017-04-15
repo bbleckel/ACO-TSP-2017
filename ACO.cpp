@@ -43,22 +43,27 @@ void ACOSolver::updateBSF() {
     for (int i = 0; i < ants.size(); i++) {
         double tourLength = calculateTourDistance(ants[i]);
         if (tourLength < localMinTourLength) {
-            // cout << "tourLength: " << tourLength << " localMinTourLength: " << localMinTourLength << endl;
             localMinTourLength = tourLength;
-            // cout << "updated localMinTourLength: " << localMinTourLength << endl;
             localMinTour = ants[i].tour;
 
         }
 
     }
-    // cout << "final localMinTourLength: " << localMinTourLength << endl;
-    // cout << "current bsfRouteLength: " << bsfRouteLength << endl;
     // replace bsfRoute if necessary
     if (localMinTourLength < bsfRouteLength) {
         bsfRouteLength = localMinTourLength;
         for (int j = 0; j < localMinTour.size(); j++) {
             // set cities to best tour cities
             bsfRoute[j] = localMinTour[j].ID;
+        }
+        for (int i = 0; i < cities.size(); i++) {
+            for (int j = 0; j < cities.size(); j++) {
+                if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
+                    legs[i][j].inBSF = true;
+                } else {
+                    legs[i][j].inBSF = false;
+                }
+            }
         }
     }
 }
@@ -185,6 +190,7 @@ void ACOSolver::initAllLegs() {
             Leg tempLeg;
             tempLeg.city1 = cities[i];
             tempLeg.city2 = cities[j];
+            tempLeg.inBSF = false;
             if (i != j) {
                 tempLeg.phero = PHERO_INITAL;
                 tempLeg.length = calculateDistance(tempLeg.city1.p, tempLeg.city2.p);
@@ -192,7 +198,7 @@ void ACOSolver::initAllLegs() {
                 tempLeg.phero = 0;
                 tempLeg.length = INT_MAX;
             }
-            
+
             tempVect.push_back(tempLeg);
         }
         // add to total legs
@@ -364,7 +370,7 @@ void ACOSolver::ACSGlobalPheroUpdate() {
         for (int j = 0; j < legs[i].size(); j++) {
             if (i != j) {
                 double newPhero;
-                if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
+                if (legs[i][j].inBSF) {
                     newPhero = (1 - RHO) * legs[i][j].phero + RHO * (1/bsfRouteLength);
                 } else {
                     newPhero = (1 - RHO) * legs[i][j].phero;
@@ -398,7 +404,7 @@ void ACOSolver::EASPheroUpdate() {
     for(int i = 0; i < legs.size(); i++) {
         for (int j = 0; j < legs[i].size(); j++) {
             double newPhero;
-            
+
             double deltaTotal = 0;
             // iterate through ants, adding 1 / tour length if this leg is in their tour
             for(int i = 0; i < ants.size(); i++) {
@@ -409,14 +415,12 @@ void ACOSolver::EASPheroUpdate() {
             }
             double deltaTauBest = 0;
             // add if this leg is in BSF tour
-            if(inBSF(legs[i][j].city1, legs[i][j].city2)) {
+            if(legs[i][j].inBSF) {
                 deltaTauBest = 1 / bsfRouteLength;
             }
-            
+
             newPhero = (1 - RHO) * legs[i][j].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
-            
-//            newPhero = (1 - RHO) * legs[i][j].phero + deltaTotal + (deltaTauBest * ELITISM_FACTOR);
-            
+
             legs[i][j].phero = newPhero;
         }
     }
@@ -530,7 +534,6 @@ void ACOSolver::solve() {
     }
     int iterations = 1;
     while(!terminated(iterations)) {
-//        cout << "Iteration " << iterations << endl;
         buildTours();
 
         updateBSF();
