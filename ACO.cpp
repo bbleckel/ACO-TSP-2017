@@ -203,12 +203,13 @@ ACOSolver::ACOSolver(string fileName) {
     initAnts();
 }
 
-ACOSolver::ACOSolver(string fileName, double alpha, double beta, double rho) {
+ACOSolver::ACOSolver(string fileName, double q0, double epsilon, double alpha, double beta, double rho) {
     srand(time(NULL));
 
     this->fileName = fileName;
     readFile();
-
+    this->q_0 = q0;
+    this->epsilon = epsilon;
     this->alpha = alpha;
     this->beta = beta;
     this->rho = rho;
@@ -340,14 +341,8 @@ int ACOSolver::getGreedyNextCity(Ant k) {
     for (int i = 0; i < k.unvisited.size(); i++) {
         distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
         pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
-<<<<<<< Updated upstream
-        numerator = pheroOnLeg * pow((1 / distToCity), BETA);
-        if (numerator > currMaxValue) {
-=======
-        // numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
-        numerator = pheroOnLeg * pow((1 / distToCity), beta);
+        numerator = pow(pheroOnLeg, alpha) * pow((1 / distToCity), beta);
         if (numerator >= currMaxValue) {
->>>>>>> Stashed changes
             currMaxValue = numerator;
             currChoiceIndex = i;
         }
@@ -362,13 +357,8 @@ void ACOSolver::ACSGlobalPheroUpdate() {
         for (int j = 0; j < legs[i].size(); j++) {
             if (i != j) {
                 double newPhero;
-<<<<<<< Updated upstream
                 if (legs[i][j].inBSF) {
-                    newPhero = (1 - RHO) * legs[i][j].phero + RHO * (1/bsfRouteLength);
-=======
-                if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
                     newPhero = ((1 - rho) * legs[i][j].phero) + rho * (1/bsfRouteLength);
->>>>>>> Stashed changes
                 } else {
                     newPhero = (1 - rho) * legs[i][j].phero;
                 }
@@ -384,7 +374,8 @@ void ACOSolver::ACSLocalPheroUpdate(City cityA, City cityB) {
     int i = cityA.ID;
     int j = cityB.ID;
 
-    legs[i][j].phero = ((1 - EPSILON) * legs[i][j].phero) + (EPSILON * tau_0);
+    // legs[i][j].phero = ((1 - EPSILON) * legs[i][j].phero) + (EPSILON * tau_0);
+    legs[i][j].phero = ((1 - epsilon) * legs[i][j].phero) + (epsilon * tau_0);
     legs[j][i].phero = legs[i][j].phero;
 }
 
@@ -423,7 +414,8 @@ void ACOSolver::buildTours() {
                 // ACS
                 double prob = ((double) rand()) / RAND_MAX;
                 int cityIndex;
-                if (prob < Q0) {
+                // if (prob < Q0) {
+                if (prob < q_0) {
                     cityIndex = getGreedyNextCity(ants[i]);
                 } else {
                     cityIndex = getNextCity(ants[i]);
@@ -523,10 +515,6 @@ vector<double> ACOSolver::solve() {
     vector<double> bsf;
 
     while(!terminated(iterations)) {
-<<<<<<< Updated upstream
-=======
-        // cout << "Iteration " << iterations << endl;
->>>>>>> Stashed changes
         buildTours();
 
         updateBSF();
@@ -539,20 +527,12 @@ vector<double> ACOSolver::solve() {
 
         resetAnts();
 
-<<<<<<< Updated upstream
-        if((ITERATIONS - iterations) % (ITERATIONS / 10) == 0 || iterations <= 10) {
-            cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-            cout << "**********************************************************************" << endl;
-        }
-=======
         // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
         // cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
         // cout << "**********************************************************************" << endl;
         // }
 
         bsf.push_back(bsfRouteLength);
-
->>>>>>> Stashed changes
         iterations++;
     }
     // double perc = ((double)bsfRouteLength / (double)optimal);
@@ -568,13 +548,8 @@ vector<double> ACOSolver::solve() {
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
-<<<<<<< Updated upstream
-            cout << "Terminating because MAX number of iterations (";
-            cout << ITERATIONS << ") met." << endl;
-=======
             // cout << "Terminating because MAX number of itertaions (";
             // cout << ITERATIONS << ") met." << endl;
->>>>>>> Stashed changes
             return true;
         }
     }

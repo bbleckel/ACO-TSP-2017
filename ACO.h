@@ -17,7 +17,7 @@ const int ITERATIONS = 300; // number of iterations (200-300 should do it)
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
                                         //within which our solution will stop iterating
-const double ALPHA = 1.5; // pheromone influence
+const double ALPHA = 1; // pheromone influence
 const double BETA = 5.0; // heuristic influence
 const double RHO = 0.01; // evaporation (0 < RHO < 1)
 
@@ -67,7 +67,7 @@ class ACOSolver {
 public:
     ACOSolver(string fileName);
     //special constructor for testing
-    ACOSolver(string fileName, double alpha, double beta, double rho);
+    ACOSolver(string fileName, double q0, double epsilon, double alpha, double beta, double rho);
     ~ACOSolver();
 
     vector<Ant> ants;
@@ -78,6 +78,8 @@ public:
 
     int numAnts;
     string fileName;
+    double q_0;
+    double epsilon;
     double alpha;
     double beta;
     double rho;
