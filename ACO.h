@@ -12,7 +12,7 @@ using namespace std;
 
 // parameters to set
 const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
-const int NUM_ANTS = 30; // number of ants
+const int NUM_ANTS = 20; // number of ants
 const int ITERATIONS = 300; // number of iterations (200-300 should do it)
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
 const double OPTIMAL_DEVIATION = 0.01; // percentage from the optimal
@@ -66,6 +66,8 @@ typedef struct _ant {
 class ACOSolver {
 public:
     ACOSolver(string fileName);
+    //special constructor for testing
+    ACOSolver(string fileName, double alpha, double beta, double rho);
     ~ACOSolver();
 
     vector<Ant> ants;
@@ -74,13 +76,17 @@ public:
     vector<int> bsfRoute;
     double bsfRouteLength;
 
+    int numAnts;
     string fileName;
+    double alpha;
+    double beta;
+    double rho;
     int optimal;
 
     double tau_0; //length of nearest neighbor tour, set by setTau()
 
     /* solver functions */
-    void solve();
+    vector<double> solve();
     bool terminated(int iterations);
 
     // helper functions

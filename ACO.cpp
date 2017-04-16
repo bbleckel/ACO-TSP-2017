@@ -190,10 +190,34 @@ ACOSolver::ACOSolver(string fileName) {
     srand(time(NULL));
     // constructor
     this->fileName = fileName;
+    alpha = ALPHA;
+    beta = BETA;
+    rho = RHO;
     readFile();
-    cout << ALGTYPE << " " << NUM_ANTS << " " << ITERATIONS << " " << PHERO_INITAL
-    << " " << OPTIMAL_DEVIATION << " " << ALPHA << " " << BETA << " "
-    << RHO << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+    numAnts = cities.size();
+
+    // cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
+    // << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
+    // << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+    initAllLegs();
+    initAnts();
+}
+
+ACOSolver::ACOSolver(string fileName, double alpha, double beta, double rho) {
+    srand(time(NULL));
+
+    this->fileName = fileName;
+    readFile();
+
+    this->alpha = alpha;
+    this->beta = beta;
+    this->rho = rho;
+    numAnts = cities.size();
+
+    // cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
+    // << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
+    // << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+
     initAllLegs();
     initAnts();
 }
@@ -293,22 +317,22 @@ void ACOSolver::readFile() {
             if (line.substr(0, line.find(" ")) == search) {
                 line.erase(line.begin(), line.begin()+line.find(": ")+1);
                 optimal = stoi(line);
-                cout << "The optimal is " << optimal << endl;
+                // cout << "The optimal is " << optimal << endl;
                 break;
             }
         }
         inputFile.close();
     }
 
-    cout << "Printing cities! (" << cities.size() << ")" << endl;
-    for(int i = 0; i < cities.size(); i++) {
-        printCity(cities[i]);
-    }
+    // cout << "Printing cities! (" << cities.size() << ")" << endl;
+    // for(int i = 0; i < cities.size(); i++) {
+    //     printCity(cities[i]);
+    // }
 }
 
 // gets the index in the unvisited vector of the next city to go to greedily
 int ACOSolver::getGreedyNextCity(Ant k) {
-    double currMaxValue = 0;
+    double currMaxValue = INT_MIN;
     int currChoiceIndex = 0;
     double distToCity = 0;
     double pheroOnLeg = 0;
@@ -316,8 +340,14 @@ int ACOSolver::getGreedyNextCity(Ant k) {
     for (int i = 0; i < k.unvisited.size(); i++) {
         distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
         pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
+<<<<<<< Updated upstream
         numerator = pheroOnLeg * pow((1 / distToCity), BETA);
         if (numerator > currMaxValue) {
+=======
+        // numerator = (pow(pheroOnLeg, ALPHA) * pow((1 / distToCity), BETA));
+        numerator = pheroOnLeg * pow((1 / distToCity), beta);
+        if (numerator >= currMaxValue) {
+>>>>>>> Stashed changes
             currMaxValue = numerator;
             currChoiceIndex = i;
         }
@@ -332,10 +362,15 @@ void ACOSolver::ACSGlobalPheroUpdate() {
         for (int j = 0; j < legs[i].size(); j++) {
             if (i != j) {
                 double newPhero;
+<<<<<<< Updated upstream
                 if (legs[i][j].inBSF) {
                     newPhero = (1 - RHO) * legs[i][j].phero + RHO * (1/bsfRouteLength);
+=======
+                if (inBSF(legs[i][j].city1, legs[i][j].city2)) {
+                    newPhero = ((1 - rho) * legs[i][j].phero) + rho * (1/bsfRouteLength);
+>>>>>>> Stashed changes
                 } else {
-                    newPhero = (1 - RHO) * legs[i][j].phero;
+                    newPhero = (1 - rho) * legs[i][j].phero;
                 }
                 legs[i][j].phero = newPhero;
             }
@@ -430,7 +465,7 @@ int ACOSolver::getNextCity(Ant k) {
         double tempDenom = 0;
         double tempPhero = legs[k.city.ID][k.unvisited[i].ID].phero;
         double distToTempCity = legs[k.city.ID][k.unvisited[i].ID].length;
-        tempDenom = (pow(tempPhero, ALPHA) * pow((1 / distToTempCity), BETA));
+        tempDenom = (pow(tempPhero, alpha) * pow((1 / distToTempCity), beta));
         denominator += tempDenom;
     }
     int i = 0;
@@ -439,7 +474,7 @@ int ACOSolver::getNextCity(Ant k) {
         City randCity = k.unvisited[randCityIndex];
         double distToRandCity = legs[k.city.ID][randCity.ID].length;
         double pheroOnLegToRand = legs[k.city.ID][randCity.ID].phero;
-        double numerator = (pow(pheroOnLegToRand, ALPHA) * pow((1 / distToRandCity), BETA));
+        double numerator = (pow(pheroOnLegToRand, alpha) * pow((1 / distToRandCity), beta));
 
         pij = numerator / denominator;
         double prob = ((double) rand())/RAND_MAX;
@@ -472,19 +507,26 @@ void ACOSolver::setTau() {
         totalDistance += minDistance;
     }
     tau_0 = 1/(cities.size()*totalDistance);
-    cout << "tau_0 = " << tau_0 << " totalDistance = " << totalDistance << endl;
+    // cout << "tau_0 = " << tau_0 << " totalDistance = " << totalDistance << endl;
 }
 
-void ACOSolver::solve() {
+vector<double> ACOSolver::solve() {
     setTau();
     cout << endl;
-    if (ALGTYPE == 1) {
-        cout << "Solving with Ant Colony System..." << endl << endl;
-    } else {
-        cout << "Solving with Elitist Ant System..." << endl << endl;
-    }
+    // if (ALGTYPE == 1) {
+    //     cout << "Solving with Ant Colony System..." << endl << endl;
+    // } else {
+    //     cout << "Solving with Elitist Ant System..." << endl << endl;
+    // }
     int iterations = 1;
+
+    vector<double> bsf;
+
     while(!terminated(iterations)) {
+<<<<<<< Updated upstream
+=======
+        // cout << "Iteration " << iterations << endl;
+>>>>>>> Stashed changes
         buildTours();
 
         updateBSF();
@@ -497,30 +539,49 @@ void ACOSolver::solve() {
 
         resetAnts();
 
+<<<<<<< Updated upstream
         if((ITERATIONS - iterations) % (ITERATIONS / 10) == 0 || iterations <= 10) {
             cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
             cout << "**********************************************************************" << endl;
         }
+=======
+        // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
+        // cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        // cout << "**********************************************************************" << endl;
+        // }
+
+        bsf.push_back(bsfRouteLength);
+
+>>>>>>> Stashed changes
         iterations++;
     }
-    double perc = ((double)bsfRouteLength / (double)optimal);
-    cout << endl << "Overall best: " << bsfRouteLength << " (";
-    cout << perc*100 << " percent of the optimal)." << endl;
-    cout << "Optimal (from file): " << optimal << endl;
+    // double perc = ((double)bsfRouteLength / (double)optimal);
+    // cout << endl << "Overall best: " << bsfRouteLength << " (";
+    // cout << perc*100 << " percent of the optimal)." << endl;
+    // cout << "Optimal (from file): " << optimal << endl;
+
+    bsf.push_back(optimal);
+
+    return bsf;
 }
 
 bool ACOSolver::terminated(int iterations) {
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
+<<<<<<< Updated upstream
             cout << "Terminating because MAX number of iterations (";
             cout << ITERATIONS << ") met." << endl;
+=======
+            // cout << "Terminating because MAX number of itertaions (";
+            // cout << ITERATIONS << ") met." << endl;
+>>>>>>> Stashed changes
             return true;
         }
     }
     if (TERM == 2 || TERM == 3) {
         if ((1.0-((double)optimal/(double)bsfRouteLength)) < OPTIMAL_DEVIATION) {
-            cout << "Terminating because reached " << OPTIMAL_DEVIATION;
-            cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
+            // cout << "Terminating because reached " << OPTIMAL_DEVIATION;
+            // cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
             return true;
         }
     }
