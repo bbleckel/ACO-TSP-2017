@@ -11,7 +11,7 @@
 using namespace std;
 
 // parameters to set
-const int ALGTYPE = 1; // 0 for EAS, 1 for ACS
+const int ALGTYPE = 0; // 0 for EAS, 1 for ACS
 const int NUM_ANTS = 20; // number of ants
 const int ITERATIONS = 300; // number of iterations (200-300 should do it)
 const double PHERO_INITAL = 1.0; // initial pheromone level for each leg
@@ -24,7 +24,7 @@ const double RHO = 0.01; // evaporation (0 < RHO < 1)
 // this one only for EAS
 const int ELITISM_FACTOR = NUM_ANTS;
 
-// these three only for ACS (tau is defined in the class)
+// these three only for ACS (tau is the third and is defined in the class)
 const double EPSILON = 0.1;
 const double Q0 = 0.9;
 
