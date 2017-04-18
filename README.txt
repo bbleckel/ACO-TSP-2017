@@ -14,7 +14,7 @@ The command line arguments are as follows, in the order presented:
 For all Ant Colony Optimization:
 ./main filename
 filename = path to the tsp file to use
-Sample input: './main ALL_tsp/att48.tsp'
+Sample input: './main ALL_tsp/berlin52.tsp'
 
 The path to the file is entered after the executable for the file, which is ./main
 and can be compiled using the included Makefile (simply type make to compile).

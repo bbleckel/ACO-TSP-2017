@@ -12,7 +12,7 @@ void printInfo() {
     cout << endl;
     cout << "Usage:\nFor all Ant Colony Optimization:\n./main filename" << endl;
     cout << "filename = path to the tsp file to use" << endl;
-    cout << "Sample input: './main ALL_tsp/att48.tsp'" << endl;
+    cout << "Sample input: './main ALL_tsp/berlin52.tsp'" << endl;
     cout << endl;
 }
 
