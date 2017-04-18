@@ -196,13 +196,15 @@ ACOSolver::ACOSolver(string fileName) {
     readFile();
     numAnts = cities.size();
 
-    // cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
-    // << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
-    // << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+    cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
+    << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
+    << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+
     initAllLegs();
     initAnts();
 }
 
+//special constructor for testing
 ACOSolver::ACOSolver(string fileName, double q0, double epsilon, double alpha, double beta, double rho) {
     srand(time(NULL));
 
@@ -215,9 +217,9 @@ ACOSolver::ACOSolver(string fileName, double q0, double epsilon, double alpha, d
     this->rho = rho;
     numAnts = cities.size();
 
-    // cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
-    // << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
-    // << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
+    cout << ALGTYPE << " " << numAnts << " " << ITERATIONS << " " << PHERO_INITAL
+    << " " << OPTIMAL_DEVIATION << " " << alpha << " " << beta << " "
+    << rho << " " << ELITISM_FACTOR << " " << EPSILON << " " << Q0 << endl;
 
     initAllLegs();
     initAnts();
@@ -237,6 +239,7 @@ void ACOSolver::readFile() {
     point2D p;
 
     int started = 0;
+    //read in cities
     if(!inputFile.is_open()) {
         cerr << "ERROR: Could not open file" << endl;
         exit(1);
@@ -318,17 +321,17 @@ void ACOSolver::readFile() {
             if (line.substr(0, line.find(" ")) == search) {
                 line.erase(line.begin(), line.begin()+line.find(": ")+1);
                 optimal = stoi(line);
-                // cout << "The optimal is " << optimal << endl;
+                cout << "The optimal is " << optimal << endl;
                 break;
             }
         }
         inputFile.close();
     }
 
-    // cout << "Printing cities! (" << cities.size() << ")" << endl;
-    // for(int i = 0; i < cities.size(); i++) {
-    //     printCity(cities[i]);
-    // }
+    cout << "Printing cities! (" << cities.size() << ")" << endl;
+    for(int i = 0; i < cities.size(); i++) {
+        printCity(cities[i]);
+    }
 }
 
 // gets the index in the unvisited vector of the next city to go to greedily
@@ -341,7 +344,9 @@ int ACOSolver::getGreedyNextCity(Ant k) {
     for (int i = 0; i < k.unvisited.size(); i++) {
         distToCity = legs[k.city.ID][k.unvisited[i].ID].length;
         pheroOnLeg = legs[k.city.ID][k.unvisited[i].ID].phero;
+        //calculate numerator
         numerator = pow(pheroOnLeg, alpha) * pow((1 / distToCity), beta);
+        //if it's better than the best, set it and set index
         if (numerator >= currMaxValue) {
             currMaxValue = numerator;
             currChoiceIndex = i;
@@ -355,6 +360,7 @@ void ACOSolver::ACSGlobalPheroUpdate() {
     // iterate through legs, updating pheromones
     for(int i = 0; i < legs.size(); i++) {
         for (int j = 0; j < legs[i].size(); j++) {
+            //make sure not the same leg
             if (i != j) {
                 double newPhero;
                 if (legs[i][j].inBSF) {
@@ -438,6 +444,7 @@ void ACOSolver::buildTours() {
     }
 }
 
+//reset all values of the ants (to be done on each iteration)
 void ACOSolver::resetAnts() {
     for (int i = 0; i < ants.size(); i++) {
         ants[i].unvisited = cities;
@@ -478,42 +485,57 @@ int ACOSolver::getNextCity(Ant k) {
 
 }
 
+//find the closest city path starting from a random city
+//this is used in calculations later, but is only calculated once
+//note that this greedy algorithm does not find the best overall
+//path, just one that is somewhat reasonable
 void ACOSolver::setTau() {
     vector<City> notYetVisited = cities;
     double totalDistance = 0;
 
+    //get a random city to start from
     int cityIndex = getRandomCity(notYetVisited);
     int nextCityIndex = cityIndex;
+
+    //iterate over all of the cities
     for (int c = 0; c < cities.size() - 1; c++) {
         cityIndex = nextCityIndex;
+        //take out the city that we're currently at
         notYetVisited.erase(notYetVisited.begin() + cityIndex);
         double minDistance = INT_MAX;
 
+        //find the closest one
         for (int i = 0; i < notYetVisited.size(); i++) {
             double distance = calculateDistance(cities[cityIndex].p, notYetVisited[i].p);
+            //find the closest one
             if (distance < minDistance) {
                 minDistance = distance;
                 nextCityIndex = i;
             }
         }
+        //add distance to the total
         totalDistance += minDistance;
     }
+
+    //set tau_0
     tau_0 = 1/(cities.size()*totalDistance);
-    // cout << "tau_0 = " << tau_0 << " totalDistance = " << totalDistance << endl;
+    cout << "tau_0 = " << tau_0 << " totalDistance = " << totalDistance << endl;
 }
 
 vector<double> ACOSolver::solve() {
     setTau();
     cout << endl;
-    // if (ALGTYPE == 1) {
-    //     cout << "Solving with Ant Colony System..." << endl << endl;
-    // } else {
-    //     cout << "Solving with Elitist Ant System..." << endl << endl;
-    // }
+    if (ALGTYPE == 1) {
+        cout << "Solving with Ant Colony System..." << endl << endl;
+    } else {
+        cout << "Solving with Elitist Ant System..." << endl << endl;
+    }
     int iterations = 1;
 
+    //bsf vector is only for testing
     vector<double> bsf;
 
+    //while termination condition not met
     while(!terminated(iterations)) {
         buildTours();
 
@@ -527,44 +549,48 @@ vector<double> ACOSolver::solve() {
 
         resetAnts();
 
-        // if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
-        // cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
-        // cout << "**********************************************************************" << endl;
-        // }
+        //print out every 20th iteration the current best value
+        if((ITERATIONS - iterations) % (ITERATIONS / 20) == 0 || iterations <= 10) {
+            cout << "Best route length so far (iteration " << iterations << "): " << bsfRouteLength << endl;
+        }
 
+        //save the current best to the vector
         bsf.push_back(bsfRouteLength);
         iterations++;
     }
-    // double perc = ((double)bsfRouteLength / (double)optimal);
-    // cout << endl << "Overall best: " << bsfRouteLength << " (";
-    // cout << perc*100 << " percent of the optimal)." << endl;
-    // cout << "Optimal (from file): " << optimal << endl;
+
+    //print out the final best value.
+    double perc = ((double)bsfRouteLength / (double)optimal);
+    cout << endl << "Overall best: " << bsfRouteLength << " (";
+    cout << perc*100 << " percent of the optimal)." << endl;
+    cout << "Optimal (from file): " << optimal << endl;
 
     bsf.push_back(optimal);
 
     return bsf;
 }
 
+//check termination conditions
 bool ACOSolver::terminated(int iterations) {
+    //if user wants to stop when num iterations is met or first of num iterations
+    //and perecnt of optimal
     if (TERM == 1 || TERM == 3) {
         if (iterations == ITERATIONS) {
-            // cout << "Terminating because MAX number of itertaions (";
-            // cout << ITERATIONS << ") met." << endl;
+            cout << "Terminating because MAX number of itertaions (";
+            cout << ITERATIONS << ") met." << endl;
             return true;
         }
     }
+
+    //if user wants to stop when percent of optimal is met or first of num iterations
+    //and perecnt of optimal
     if (TERM == 2 || TERM == 3) {
         if ((1.0-((double)optimal/(double)bsfRouteLength)) < OPTIMAL_DEVIATION) {
-            // cout << "Terminating because reached " << OPTIMAL_DEVIATION;
-            // cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
+            cout << "Terminating because reached " << OPTIMAL_DEVIATION;
+            cout << " percent of optimal solution at iteration " << iterations+1 << "." << endl;
             return true;
         }
     }
 
     return false;
 }
-
-// legs contains duplicates (a->b = b->a)
-// actually count distance for bsfDistance in initAllLegs?
-// should pheromone be two way or one way?
-// save some calculation time using legs as routes instead of cities (so distance is stored)

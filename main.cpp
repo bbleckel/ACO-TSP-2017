@@ -36,7 +36,7 @@ void test() {
                 // for(int a = 0; a < 5; a++) {
                     // for(int b = 0; b < 5; b++) {
                         // for(int r = 0; r < 5; r++) {
-                        int f = 0;
+                        int f = 2;
                         int a = 0;
                         int b = 3;
                         int r = 1;
@@ -50,7 +50,7 @@ void test() {
                                 trials.push_back(solver.solve());
                             }
                             sort(trials.begin(), trials.end(), compare);
-                            cout << "% **INPUTS** file: " << files[f] << ", alpha: " << alphas[a];
+                            cout << "% ACS **INPUTS** file: " << files[f] << ", alpha: " << alphas[a];
                             cout << ", beta: " << betas[b] << ", rho: " << rhos[r] << ", epsilon: " << epsilons[eps] << ", q_0: " << qs[q];
                             cout << "; median best over " << TRIALS << " trials." << endl;
                             cout << "% The best from file is: ";
@@ -83,14 +83,14 @@ int main (int argc, char** argv) {
         printInfo();
         exit(1);
     } else {
-        // string fileName = argv[1];
-        // cout << fileName << endl;
-        //
-        // ACOSolver solver(fileName);
-        //
-        // solver.solve();
+        string fileName = argv[1];
+        cout << fileName << endl;
 
-        test();
+        ACOSolver solver(fileName);
+
+        solver.solve();
+
+        // test();
     }
 
 }
