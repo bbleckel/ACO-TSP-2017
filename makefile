@@ -10,7 +10,7 @@ main: main.o ACO.o
 main.o: main.cpp ACO.h
 	$(CC) -c main.cpp -o $@
 
-PSO.o: ACO.cpp ACO.h
+ACO.o: ACO.cpp ACO.h
 	$(CC) -c ACO.cpp -o $@
 
 clean:
