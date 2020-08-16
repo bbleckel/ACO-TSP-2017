@@ -1,9 +1,9 @@
-ACO-TSP-2017
+# ACO-TSP-2017
 By: Bo Bleckel, Jasper Houston, and Dylan Parsons
 Nature Inspired Computation - CSCI 3445
 Bowdoin College
 
-/* This program is implemented in C++ */
+This program is implemented in C++
 
 This program solves a given Traveling Salesman Problem (TSP) using an Ant Colony Optimization (ACO) approach.
 The goal of the program is to compare Elitist Ant System (EAS) and Ant Colony System (ACS).
@@ -11,6 +11,7 @@ A detailed explanation of TSP, ACO, our methods, and results are in the included
 The main.cpp file deals with the testing and with parsing the command line.
 The command line arguments are as follows, in the order presented:
 
+### Instructions
 For all Ant Colony Optimization:
 ./main filename
 filename = path to the tsp file to use
