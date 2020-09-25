@@ -3,7 +3,9 @@ By: Bo Bleckel, Jasper Houston, and Dylan Parsons
 Nature Inspired Computation - CSCI 3445
 Bowdoin College
 
-This program is implemented in C++
+This program is implemented in C++.
+
+Writeup can be found at <Ants.pdf>
 
 This program solves a given Traveling Salesman Problem (TSP) using an Ant Colony Optimization (ACO) approach.
 The goal of the program is to compare Elitist Ant System (EAS) and Ant Colony System (ACS).
