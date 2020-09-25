@@ -5,7 +5,7 @@ Bowdoin College
 
 This program is implemented in C++.
 
-Writeup can be found at (Ants.pdf)[Ants.pdf]
+Writeup can be found at [Ants.pdf](Ants.pdf)
 
 This program solves a given Traveling Salesman Problem (TSP) using an Ant Colony Optimization (ACO) approach.
 The goal of the program is to compare Elitist Ant System (EAS) and Ant Colony System (ACS).
